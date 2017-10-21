@@ -1,4 +1,5 @@
 package queries;
+import java.util.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -41,7 +42,7 @@ public class QueriesRunner {
                 stmt.executeUpdate(sql);
                 rs = stmt.executeQuery(sql);
                 while (rs.next()) {
-                    Integer s = rs.getInt("id");
+                    Integer s = new Integer(rs.getInt("id"));
                     String n = rs.getString("lvl");
                     System.out.println(s + "   " + n);
                 }
@@ -59,10 +60,7 @@ public class QueriesRunner {
 	}
 	
 	public static void main(String[] args){
-//		updateQueries("insert into students values(1,'u')");
-		updateQueries("delete from students");
 		selectQueries("select * from students");
-		
 	}
 
 }
