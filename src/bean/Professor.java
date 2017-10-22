@@ -1,8 +1,44 @@
 package bean;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Professor {
 	Integer id;
 	String name;
+	String user_id;
+	String password;
+	public  void loginAsProfessor(ResultSet rs){
+		try {
+			this.id=rs.getInt("id");
+			this.name=rs.getString("name");
+			this.user_id=rs.getString("user_id");
+			this.password=rs.getString("password");
+			
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public String getUser_id() {
+		return user_id;
+	}
+
+	public void setUser_id(String user_id) {
+		this.user_id = user_id;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
 	public Integer getId() {
 		return id;
 	}
@@ -15,8 +51,11 @@ public class Professor {
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	@Override
 	public String toString() {
-		return "Professor [id=" + id + ", name=" + name + "]";
+		return "Professor [id=" + id + ", name=" + name + ", user_id="
+				+ user_id + ", password=" + password + "]";
 	}
+	
 }

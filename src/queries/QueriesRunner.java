@@ -1,66 +1,101 @@
 package queries;
-import java.util.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import connection.GdConnection;
 
 
 public class QueriesRunner {
-	
-	public static void updateQueries(String sql){
-        try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection conn = null;
-            Statement stmt = null;
+	ResultSet rs;
+	Connection conn;
+    Statement stmt;
+    
+    public QueriesRunner(){
+    	try{
+    		Class.forName("oracle.jdbc.driver.OracleDriver");
 
+    		try {
+
+    			this.conn = DriverManager.getConnection(GdConnection.jdbcURL, GdConnection.user, GdConnection.passwd);
+    			this.stmt = this.conn.createStatement();;
+    			//		        ResultSet rs = null;
+
+    		} catch (SQLException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		};}
+    	catch(Throwable oops) {
+    		oops.printStackTrace();
+    	}
+    }
+    public  void closeConnection(){
+    	GdConnection.close(conn);
+    	GdConnection.close(stmt);
+    }
+	public  ResultSet selectQueries(String sql){
+		System.out.println(sql);
+		ResultSet rs = null;
+//		Connection conn = null;
+//        Statement stmt = null;
+		try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
             try {
-                conn = DriverManager.getConnection(GdConnection.jdbcURL, GdConnection.user, GdConnection.passwd);
-                stmt = conn.createStatement();
-                stmt.executeUpdate(sql);
+//                conn = DriverManager.getConnection(GdConnection.jdbcURL, GdConnection.user, GdConnection.passwd);
+//                stmt = conn.createStatement();
+                this.stmt.executeUpdate(sql);
+                rs = this.stmt.executeQuery(sql);
+//                System.out.println(rs.);
+//                while (rs.next()) {
+//                    Integer s = rs.getInt("id");
+//                    String n = rs.getString("lvl");
+//                    System.out.println(s + "   " + n);
+//                }
+
 
             } finally {
-                GdConnection.close(stmt);
-                GdConnection.close(conn);
+//                GdConnection.close(stmt);
+//                GdConnection.close(conn);
+//                GdConnection.close(rs);
             }
         } catch(Throwable oops) {
             oops.printStackTrace();
         }
-
-	}
-	public static void selectQueries(String sql){
-        try {
-            Class.forName("oracle.jdbc.driver.OracleDriver");
-            Connection conn = null;
-            Statement stmt = null;
-            ResultSet rs = null;
-            try {
-                conn = DriverManager.getConnection(GdConnection.jdbcURL, GdConnection.user, GdConnection.passwd);
-                stmt = conn.createStatement();
-                stmt.executeUpdate(sql);
-                rs = stmt.executeQuery(sql);
-                while (rs.next()) {
-                    Integer s = new Integer(rs.getInt("id"));
-                    String n = rs.getString("lvl");
-                    System.out.println(s + "   " + n);
-                }
-
-
-            } finally {
-                GdConnection.close(stmt);
-                GdConnection.close(conn);
-                GdConnection.close(rs);
-            }
-        } catch(Throwable oops) {
-            oops.printStackTrace();
-        }
-
+        return rs;
 	}
 	
 	public static void main(String[] args){
-		selectQueries("select * from students");
+//		updateQueries("insert into students values(1,'u')");
+//		updateQueries("delete from students");
+//		ResultSet r=selectQueries("select * from students");
+//		System.out.println(r);
+//		ResultSet s=selectQueries("select * from students where USER_ID='kogan' and PASSWORD='kogan'");
+//		System.out.println(s);
 	}
 
 }
+
+//
+//
+//public static void updateQueries(String sql){
+//    try {
+//        Class.forName("oracle.jdbc.driver.OracleDriver");
+//        Connection conn = null;
+//        Statement stmt = null;
+//
+//        try {
+//            conn = DriverManager.getConnection(GdConnection.jdbcURL, GdConnection.user, GdConnection.passwd);
+//            stmt = conn.createStatement();
+//            stmt.executeUpdate(sql);
+//
+//        } finally {
+//            GdConnection.close(stmt);
+//            GdConnection.close(conn);
+//        }
+//    } catch(Throwable oops) {
+//        oops.printStackTrace();
+//    }
+//
+//}
