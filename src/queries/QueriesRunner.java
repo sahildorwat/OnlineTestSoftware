@@ -12,8 +12,15 @@ public class QueriesRunner {
 	ResultSet rs;
 	Connection conn;
     Statement stmt;
+    private static QueriesRunner qr = null;
     
-    public QueriesRunner(){
+    public static QueriesRunner getInstance(){
+    	if(qr == null)
+    		qr = new QueriesRunner();
+    	return qr;
+    }
+    
+    private QueriesRunner(){
     	try{
     		Class.forName("oracle.jdbc.driver.OracleDriver");
 

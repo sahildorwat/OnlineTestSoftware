@@ -23,6 +23,7 @@ public class Professor {
 		}
 	}
 	
+	public 
 	public String getUser_id() {
 		return user_id;
 	}

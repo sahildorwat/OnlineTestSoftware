@@ -12,7 +12,7 @@ import bean.TeachingAssistant;
 
 import queries.QueriesRunner;
 public class Application {
-	static QueriesRunner qr = new QueriesRunner();
+	static QueriesRunner qr = QueriesRunner.getInstance();
 	static Scanner sc=new Scanner(System.in);
 	public static void clearScreen() {  
 //		System.out.print("\033[H\033[2J");  
