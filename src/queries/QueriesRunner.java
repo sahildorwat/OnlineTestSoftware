@@ -41,8 +41,30 @@ public class QueriesRunner {
     	GdConnection.close(conn);
     	GdConnection.close(stmt);
     }
+    
+    public void updateQueries(String sql){
+        try {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+//            Connection conn = null;
+//            Statement stmt = null;
+
+            try {
+//                conn = DriverManager.getConnection(GdConnection.jdbcURL, GdConnection.user, GdConnection.passwd);
+//                stmt = conn.createStatement();
+                System.out.println(sql);
+            	this.stmt.executeUpdate(sql);
+                System.out.println("Successfully Updated");
+
+            } finally {
+//                GdConnection.close(stmt);
+//                GdConnection.close(conn);
+            }
+        } catch(Throwable oops) {
+            oops.printStackTrace();
+        }
+    }
 	public  ResultSet selectQueries(String sql){
-		System.out.println(sql);
+//		System.out.println(sql);
 		ResultSet rs = null;
 //		Connection conn = null;
 //        Statement stmt = null;
@@ -75,7 +97,8 @@ public class QueriesRunner {
 	public static void main(String[] args){
 //		updateQueries("insert into students values(1,'u')");
 //		updateQueries("delete from students");
-//		ResultSet r=selectQueries("select * from students");
+//		QueriesRunner qr=new QueriesRunner();
+//		qr.updateQueries("delete from courses_to_topics where topic_id=9");
 //		System.out.println(r);
 //		ResultSet s=selectQueries("select * from students where USER_ID='kogan' and PASSWORD='kogan'");
 //		System.out.println(s);
@@ -85,23 +108,4 @@ public class QueriesRunner {
 
 //
 //
-//public static void updateQueries(String sql){
-//    try {
-//        Class.forName("oracle.jdbc.driver.OracleDriver");
-//        Connection conn = null;
-//        Statement stmt = null;
-//
-//        try {
-//            conn = DriverManager.getConnection(GdConnection.jdbcURL, GdConnection.user, GdConnection.passwd);
-//            stmt = conn.createStatement();
-//            stmt.executeUpdate(sql);
-//
-//        } finally {
-//            GdConnection.close(stmt);
-//            GdConnection.close(conn);
-//        }
-//    } catch(Throwable oops) {
-//        oops.printStackTrace();
-//    }
-//
-//}
+

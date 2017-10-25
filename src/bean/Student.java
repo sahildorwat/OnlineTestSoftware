@@ -33,12 +33,15 @@ public class Student {
 				System.out.println("3. Logout");
 				System.out.print("Enter Choice: ");
 				
-				String option = sc.next();	
+
+				int option = sc.nextInt();
+				System.out.println();
+
 				
 				switch(option) {
-					case "1":	this.viewProfile(); break;
-					case "2":	this.viewCourses(); break;
-					case "3":	return;
+					case 1:	this.viewProfile(); break;
+					case 2:	this.viewCourses(); break;
+					case 3:	return;
 				}
 			}
 			
