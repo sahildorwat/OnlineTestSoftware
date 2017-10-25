@@ -2,6 +2,7 @@ package bean;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 import queries.QueriesRunner;
 
@@ -13,6 +14,7 @@ public class Student {
 	String password;
 	
 	static QueriesRunner qr = QueriesRunner.getInstance();
+	static Scanner sc = new Scanner(System.in);
 	
 	public void loginAsStudent(ResultSet rs){
 		try {
@@ -22,10 +24,49 @@ public class Student {
 			this.user_id=rs.getString("user_id");
 			this.password=rs.getString("password");
 			
+			while(true) {
+				System.out.println("Welcome " + this.name);
+				System.out.println();
+				System.out.println("1. View/Edit Profile");
+				System.out.println("2. View Courses");
+				System.out.println("3. Logout");
+				System.out.print("Enter Choice: ");
+				
+				String option = sc.next();
+				System.out.println();
+				
+				switch(option) {
+					case "1":	this.viewProfile(); break;
+					case "2":	this.viewCourses(); break;
+					case "3":	return;
+				}
+			}
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void viewProfile() {
+		String last_name = "";
+		String[] full_name = this.name.split("\\s", 2);
+		System.out.println("Press 0 to Go Back");
+		System.out.println("1. First Name: " + full_name[0]);
+		if(full_name.length == 2) {
+			last_name = full_name[1];
+		}
+		System.out.println("2. Last Name: " + last_name);
+		System.out.println("3. Student ID: " + this.user_id);
+		
+		String option = sc.next();
+		System.out.println();
+		if(option == "0") {
+			
+		}
+	}
+	
+	public void viewCourses() {
 		
 	}
 	
