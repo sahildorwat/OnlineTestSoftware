@@ -51,7 +51,7 @@ public class QueriesRunner {
             try {
 //                conn = DriverManager.getConnection(GdConnection.jdbcURL, GdConnection.user, GdConnection.passwd);
 //                stmt = conn.createStatement();
-                //this.stmt.executeUpdate(sql);
+                this.stmt.executeUpdate(sql);
                 rs = this.stmt.executeQuery(sql);
 //                System.out.println(rs.);
 //                while (rs.next()) {
