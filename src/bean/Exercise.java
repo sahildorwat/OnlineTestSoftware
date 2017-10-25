@@ -24,7 +24,7 @@ public class Exercise {
 			System.out.println("1. Current Open HWs");
 			System.out.println("2. Past HWs");
 			System.out.println("Press 0 to Go Back to Previous Menu");
-			System.out.println("Enter Choice: ");
+			System.out.print("Enter Choice: ");
 			
 			String option = sc.next();
 			switch(option) {
