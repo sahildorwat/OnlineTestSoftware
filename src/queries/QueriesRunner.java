@@ -8,8 +8,7 @@ import java.sql.Statement;
 import connection.GdConnection;
 
 
-public class QueriesRunner {
-	ResultSet rs;
+public class QueriesRunner {	
 	Connection conn;
     Statement stmt;
     private static QueriesRunner qr = null;
@@ -52,7 +51,7 @@ public class QueriesRunner {
             try {
 //                conn = DriverManager.getConnection(GdConnection.jdbcURL, GdConnection.user, GdConnection.passwd);
 //                stmt = conn.createStatement();
-                this.stmt.executeUpdate(sql);
+                //this.stmt.executeUpdate(sql);
                 rs = this.stmt.executeQuery(sql);
 //                System.out.println(rs.);
 //                while (rs.next()) {
