@@ -33,8 +33,7 @@ public class Student {
 				System.out.println("3. Logout");
 				System.out.print("Enter Choice: ");
 				
-				String option = sc.next();
-				System.out.println();
+				String option = sc.next();	
 				
 				switch(option) {
 					case "1":	this.viewProfile(); break;
@@ -50,7 +49,7 @@ public class Student {
 	}
 	
 	public void viewProfile() {
-		String option = "", last_name = "";
+		String option, last_name = "";
 		String[] full_name = this.name.split("\\s", 2);
 		System.out.println("Press 0 to Go Back");
 		System.out.println("1. First Name: " + full_name[0]);
@@ -59,6 +58,8 @@ public class Student {
 		}
 		System.out.println("2. Last Name: " + last_name);
 		System.out.println("3. Student ID: " + this.user_id);
+		System.out.println("Enter Choice: ");
+		option = sc.next();
 		if(option == "0") {
 			
 		}
@@ -66,24 +67,36 @@ public class Student {
 	
 	public void viewCourses() {
 		ResultSet rs = null;
-		rs = qr.selectQueries("select * from courses c, enrollment e where c.id=e.course_id and e.student_id="+this.id);
-		try {
-			int no = 0;
-			System.out.println("List of Current Courses: ");
-			while(rs.next()) {
-				no++;
-				System.out.println(no + ". " + rs.getString("id") + " - " + rs.getString("name"));
+		Exercise ex = new Exercise();
+		while(true) {
+			rs = qr.selectQueries("select * from courses c, enrollment e where c.id=e.course_id and e.student_id="+this.id);
+			try {
+				int no = 0;
+				System.out.println("List of Current Courses: ");
+				while(rs.next()) {
+					no++;
+					System.out.println(no + ". " + rs.getString("id") + " - " + rs.getString("name"));
+				}
+				
+				System.out.println("Please Provide Course ID (eg. CSCxxx): ");
+				System.out.println("Press 0 to Go Back to Previous Menu");
+				String option = sc.next();
+				
+				if(option == "0")
+					return;
+				else {
+					rs = qr.selectQueries("select * from exercise_mapping where course_id='" + option + "'");
+					if(rs.next()) {
+						ex.showHomeworkMenu(rs);
+					} else {
+						System.out.println("Invalid Course ID, Check formatting!");
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			GdConnection.close(rs);
-			System.out.println("Please Provide Course ID: ");
-			System.out.println("Press 0 to Go Back to Previous Menu");
-			String option = sc.next();
-			
-			if(option == "0")
-				return;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	

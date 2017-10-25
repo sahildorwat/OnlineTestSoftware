@@ -1,6 +1,9 @@
 package bean;
 
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Scanner;
 
 public class Exercise {
 	Integer id;
@@ -12,6 +15,36 @@ public class Exercise {
 	Float points_per_question;
 	Integer scoring_policy_id;
 	Integer num_of_retries;
+	
+	static Scanner sc = new Scanner(System.in);
+	
+	public void showHomeworkMenu(ResultSet rs) {
+		try {
+			System.out.println("Homework Menu for " + rs.getString("course_id"));
+			System.out.println("1. Current Open HWs");
+			System.out.println("2. Past HWs");
+			System.out.println("Press 0 to Go Back to Previous Menu");
+			System.out.println("Enter Choice: ");
+			
+			String option = sc.next();
+			switch(option) {
+				case "0": return;
+				case "1": currentHWs(); break;
+				case "2": pastHWs(); break;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void currentHWs() {
+		
+	}
+	
+	public void pastHWs() {
+		
+	}
 	
 	public Integer getId() {
 		return id;
