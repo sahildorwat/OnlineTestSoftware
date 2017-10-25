@@ -3,11 +3,14 @@ package bean;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import queries.QueriesRunner;
+
 public class Professor {
 	Integer id;
 	String name;
 	String user_id;
 	String password;
+	static QueriesRunner qr = QueriesRunner.getInstance();
 	public  void loginAsProfessor(ResultSet rs){
 		try {
 			this.id=rs.getInt("id");
@@ -23,7 +26,10 @@ public class Professor {
 		}
 	}
 	
-	public 
+	public void viewProfile(){
+		System.out.println(this);
+	}
+	
 	public String getUser_id() {
 		return user_id;
 	}
