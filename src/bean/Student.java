@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
+import connection.GdConnection;
 import queries.QueriesRunner;
 
 public class Student {
@@ -49,7 +50,7 @@ public class Student {
 	}
 	
 	public void viewProfile() {
-		String last_name = "";
+		String option = "", last_name = "";
 		String[] full_name = this.name.split("\\s", 2);
 		System.out.println("Press 0 to Go Back");
 		System.out.println("1. First Name: " + full_name[0]);
@@ -58,16 +59,32 @@ public class Student {
 		}
 		System.out.println("2. Last Name: " + last_name);
 		System.out.println("3. Student ID: " + this.user_id);
-		
-		String option = sc.next();
-		System.out.println();
 		if(option == "0") {
 			
 		}
 	}
 	
 	public void viewCourses() {
-		
+		ResultSet rs = null;
+		rs = qr.selectQueries("select * from courses c, enrollment e where c.id=e.course_id and e.student_id="+this.id);
+		try {
+			int no = 0;
+			System.out.println("List of Current Courses: ");
+			while(rs.next()) {
+				no++;
+				System.out.println(no + ". " + rs.getString("id") + " - " + rs.getString("name"));
+			}
+			GdConnection.close(rs);
+			System.out.println("Please Provide Course ID: ");
+			System.out.println("Press 0 to Go Back to Previous Menu");
+			String option = sc.next();
+			
+			if(option == "0")
+				return;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public String getName() {
