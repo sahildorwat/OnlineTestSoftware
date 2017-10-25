@@ -3,12 +3,17 @@ package bean;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import queries.QueriesRunner;
+
 public class Student {
 	String lvl;
 	Integer id;
 	String name;
 	String user_id;
 	String password;
+	
+	static QueriesRunner qr = QueriesRunner.getInstance();
+	
 	public void loginAsStudent(ResultSet rs){
 		try {
 			this.id=rs.getInt("id");
@@ -16,8 +21,6 @@ public class Student {
 			this.name=rs.getString("name");
 			this.user_id=rs.getString("user_id");
 			this.password=rs.getString("password");
-			
-			
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
