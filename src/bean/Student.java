@@ -33,8 +33,10 @@ public class Student {
 				System.out.println("3. Logout");
 				System.out.print("Enter Choice: ");
 				
+
 				int option = sc.nextInt();
 				System.out.println();
+
 				
 				switch(option) {
 					case 1:	this.viewProfile(); break;
@@ -50,8 +52,10 @@ public class Student {
 	}
 	
 	public void viewProfile() {
-		String option = "", last_name = "";
+		String option, last_name = "";
+		ResultSet rs = null;
 		String[] full_name = this.name.split("\\s", 2);
+		System.out.println();
 		System.out.println("Press 0 to Go Back");
 		System.out.println("1. First Name: " + full_name[0]);
 		if(full_name.length == 2) {
@@ -59,31 +63,77 @@ public class Student {
 		}
 		System.out.println("2. Last Name: " + last_name);
 		System.out.println("3. Student ID: " + this.user_id);
-		if(option == "0") {
-			
+		System.out.print("Enter Choice: ");
+		int op = sc.nextInt();
+		if(op == 1) {
+			System.out.println("Enter new First Name: ");
+			option = sc.next();
+			rs = qr.selectQueries("update students set name='" + option + " " + last_name + "' where id=" + this.id);
+			try {
+				if(rs.next()) {//since its a update query
+					this.name = option + " " + last_name;
+					viewProfile();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if(op == 2) {
+			System.out.println("Enter new Last Name: ");
+			option = sc.next();
+			rs = qr.selectQueries("update students set name='" + full_name[0] + " " + option + "' where id=" + this.id);
+			try {
+				if(rs.next()) {//since its a update query
+					this.name = full_name[0] + " " + option;
+					viewProfile();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if(op == 3) {
+			System.out.println("Can't edit Student ID");
+			viewProfile();
+		} else if(op == 0) {
+			return;
+		} else {
+			System.out.println("Illegal operation");
+			viewProfile();
 		}
 	}
 	
 	public void viewCourses() {
 		ResultSet rs = null;
-		rs = qr.selectQueries("select * from courses c, enrollment e where c.id=e.course_id and e.student_id="+this.id);
-		try {
-			int no = 0;
-			System.out.println("List of Current Courses: ");
-			while(rs.next()) {
-				no++;
-				System.out.println(no + ". " + rs.getString("id") + " - " + rs.getString("name"));
+		Exercise ex = new Exercise();
+		while(true) {
+			rs = qr.selectQueries("select * from courses c, enrollment e where c.id=e.course_id and e.student_id="+this.id);
+			try {
+				int no = 0;
+				System.out.println("List of Current Courses: ");
+				while(rs.next()) {
+					no++;
+					System.out.println(no + ". " + rs.getString("id") + " - " + rs.getString("name"));
+				}
+				
+				System.out.println("Please Provide Course ID (eg. CSCxxx): ");
+				System.out.println("Press 0 to Go Back to Previous Menu");
+				String option = sc.next();
+				
+				if(option == "0")
+					return;
+				else {
+					rs = qr.selectQueries("select * from exercise_mapping where course_id='" + option + "'");
+					if(rs.next()) {
+						ex.showHomeworkMenu(rs);
+					} else {
+						System.out.println("Invalid Course ID, Check formatting!");
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			GdConnection.close(rs);
-			System.out.println("Please Provide Course ID: ");
-			System.out.println("Press 0 to Go Back to Previous Menu");
-			String option = sc.next();
-			
-			if(option == "0")
-				return;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	
