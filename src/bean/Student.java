@@ -50,7 +50,9 @@ public class Student {
 	
 	public void viewProfile() {
 		String option, last_name = "";
+		ResultSet rs = null;
 		String[] full_name = this.name.split("\\s", 2);
+		System.out.println();
 		System.out.println("Press 0 to Go Back");
 		System.out.println("1. First Name: " + full_name[0]);
 		if(full_name.length == 2) {
@@ -58,10 +60,42 @@ public class Student {
 		}
 		System.out.println("2. Last Name: " + last_name);
 		System.out.println("3. Student ID: " + this.user_id);
-		System.out.println("Enter Choice: ");
-		option = sc.next();
-		if(option == "0") {
-			
+		System.out.print("Enter Choice: ");
+		int op = sc.nextInt();
+		if(op == 1) {
+			System.out.println("Enter new First Name: ");
+			option = sc.next();
+			rs = qr.selectQueries("update students set name='" + option + " " + last_name + "' where id=" + this.id);
+			try {
+				if(rs.next()) {//since its a update query
+					this.name = option + " " + last_name;
+					viewProfile();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if(op == 2) {
+			System.out.println("Enter new Last Name: ");
+			option = sc.next();
+			rs = qr.selectQueries("update students set name='" + full_name[0] + " " + option + "' where id=" + this.id);
+			try {
+				if(rs.next()) {//since its a update query
+					this.name = full_name[0] + " " + option;
+					viewProfile();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if(op == 3) {
+			System.out.println("Can't edit Student ID");
+			viewProfile();
+		} else if(op == 0) {
+			return;
+		} else {
+			System.out.println("Illegal operation");
+			viewProfile();
 		}
 	}
 	
