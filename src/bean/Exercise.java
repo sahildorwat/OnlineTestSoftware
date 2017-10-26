@@ -61,7 +61,7 @@ public class Exercise {
 	
 	public void currentHWs() {
 		ResultSet rs = null;
-		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP and e.start_time >= CURRENT_TIMESTAMP");
+		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP"); // need to add start time condition
 		System.out.println("List of available homeworks: ");
 		try {
 			while(rs.next()) {				
