@@ -3,6 +3,8 @@ package bean;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import queries.QueriesRunner;
@@ -17,10 +19,24 @@ public class Exercise {
 	Float points_per_question;
 	Integer scoring_policy_id;
 	Integer num_of_retries;
-	
+	String homework_type;
+	List <Attempt> student_attempts;
 	
 	static QueriesRunner qr = QueriesRunner.getInstance();
 	static Scanner sc = new Scanner(System.in);
+	
+	public Exercise() {
+		this.id = null;
+		this.name = null;
+		this.start_time = null;
+		this.end_time = null;
+		this.total_questions = null;
+		this.penalty_per_question = null;
+		this.points_per_question = null;
+		this.scoring_policy_id = null;
+		this.num_of_retries = null;
+		this.student_attempts = new ArrayList<Attempt>();
+	}
 	
 	public void showHomeworkMenu(ResultSet rs, Integer id) {
 		this.id = id;
@@ -45,7 +61,7 @@ public class Exercise {
 	
 	public void currentHWs() {
 		ResultSet rs = null;
-		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP");
+		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP and e.start_time >= CURRENT_TIMESTAMP");
 		System.out.println("List of available homeworks: ");
 		try {
 			while(rs.next()) {				
@@ -58,26 +74,45 @@ public class Exercise {
 		System.out.println("1. Attempt Homework");
 	}
 	
-	public void pastHWs() {
+	public void pastHWs() throws SQLException {
 		ResultSet rs = null;
-		ResultSet ex = null;
-		rs = qr.selectQueries("select * from exercises e where e.end_time < CURRENT_TIMESTAMP");
-		System.out.println("List of past homeworks: ");
-		try {
-			while(rs.next()) {				
-//				ex = qr.selectQueries("select count(*) from student_attempts_exercises s where s.student_id = " + id + " and s.exercise_id = " + rs.getInt("id"));
-				System.out.println("Name: " + rs.getString("name"));
-				System.out.println("Start time: " + rs.getString("start_time"));
-				System.out.println("End time: " + rs.getString("end_time"));
-				System.out.println("Homework type: " + rs.getString("homework_type"));
-				System.out.println("Total points: " + rs.getInt("total_questions")*rs.getInt("points_per_question"));
-				System.out.println("Scoring policy id: " + rs.getInt("scoring_policy_id"));
-				System.out.println("Number of retries: " + rs.getInt("num_of_retries"));
-//				System.out.println("Attempts by the student: " + ex.getInt("count"));
+		rs = qr.selectQueries("select * from exercises e where e.end_time <= CURRENT_TIMESTAMP" ); // need to add start time condition
+		ArrayList<Exercise> listExercise = new ArrayList<Exercise>();
+		while(rs.next()){
+			System.out.println("after end time");
+			Exercise exer=new Exercise();
+			exer.name = rs.getString("name");
+			exer.start_time = rs.getDate("start_time");
+			exer.end_time = rs.getDate("end_time");
+			exer.total_questions = rs.getInt("total_questions");
+			exer.penalty_per_question = rs.getFloat("penalty_per_question");
+			exer.points_per_question = rs.getFloat("points_per_question");
+			exer.num_of_retries = rs.getInt("num_of_retries");
+			exer.homework_type = rs.getString("homework_type");
+			exer.scoring_policy_id = rs.getInt("scoring_policy_id");
+			exer.id = rs.getInt("id");
+			listExercise.add(exer);
+		}
+		for(Exercise exer : listExercise) {
+			System.out.println(exer);
+		}
+		for(Exercise exer :listExercise)
+		{
+			ResultSet ex = qr.selectQueries("select count(*) as cnt from student_attempts_exercises s where s.student_id = " + id + " and s.exercise_id = " + exer.id);
+			int res = 0;
+			System.out.println("dkajdhaddsadk"+exer.id);
+			while (ex.next()) {
+				res = ex.getInt("cnt");
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("List of past homeworks: ");		
+//				sc = qr.selectQueries("select * from scoring_policies s where id = " + rs.getInt("scoring_policy_id"));
+			System.out.println("Name: " + exer.name);
+			System.out.println("Start time: " + exer.start_time);
+			System.out.println("End time: " + exer.end_time);
+			System.out.println("Homework type: " + exer.homework_type);
+			System.out.println("Total points: " + (exer.total_questions * exer.points_per_question));
+			System.out.println("Maximum allowed retries: " + exer.num_of_retries);
+			System.out.println("Attempts by the student: " + res);
 		}
 	}
 	
