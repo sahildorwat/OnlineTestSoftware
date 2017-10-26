@@ -5,6 +5,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
+import queries.QueriesRunner;
+
 public class Exercise {
 	Integer id;
 	String name;
@@ -16,9 +18,12 @@ public class Exercise {
 	Integer scoring_policy_id;
 	Integer num_of_retries;
 	
+	
+	static QueriesRunner qr = QueriesRunner.getInstance();
 	static Scanner sc = new Scanner(System.in);
 	
-	public void showHomeworkMenu(ResultSet rs) {
+	public void showHomeworkMenu(ResultSet rs, Integer id) {
+		this.id = id;
 		try {
 			System.out.println("Homework Menu for " + rs.getString("course_id"));
 			System.out.println("1. Current Open HWs");
@@ -39,11 +44,41 @@ public class Exercise {
 	}
 	
 	public void currentHWs() {
-		
+		ResultSet rs = null;
+		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP");
+		System.out.println("List of available homeworks: ");
+		try {
+			while(rs.next()) {				
+				System.out.println(rs.getString("name"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("1. Attempt Homework");
 	}
 	
 	public void pastHWs() {
-		
+		ResultSet rs = null;
+		ResultSet ex = null;
+		rs = qr.selectQueries("select * from exercises e where e.end_time < CURRENT_TIMESTAMP");
+		System.out.println("List of past homeworks: ");
+		try {
+			while(rs.next()) {				
+//				ex = qr.selectQueries("select count(*) from student_attempts_exercises s where s.student_id = " + id + " and s.exercise_id = " + rs.getInt("id"));
+				System.out.println("Name: " + rs.getString("name"));
+				System.out.println("Start time: " + rs.getString("start_time"));
+				System.out.println("End time: " + rs.getString("end_time"));
+				System.out.println("Homework type: " + rs.getString("homework_type"));
+				System.out.println("Total points: " + rs.getInt("total_questions")*rs.getInt("points_per_question"));
+				System.out.println("Scoring policy id: " + rs.getInt("scoring_policy_id"));
+				System.out.println("Number of retries: " + rs.getInt("num_of_retries"));
+//				System.out.println("Attempts by the student: " + ex.getInt("count"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public Integer getId() {
