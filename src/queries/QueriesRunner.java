@@ -1,6 +1,7 @@
 package queries;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,7 +10,7 @@ import connection.GdConnection;
 
 
 public class QueriesRunner {	
-	Connection conn;
+	public Connection conn;
     Statement stmt;
     private static QueriesRunner qr = null;
     
@@ -43,6 +44,7 @@ public class QueriesRunner {
     }
     
     public void updateQueries(String sql){
+    	System.out.println(sql);
     	try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
 //            Connection conn = null;
@@ -94,6 +96,8 @@ public class QueriesRunner {
         }
         return rs;
 	}
+	
+	
 	
 	public static void main(String[] args){
 //		updateQueries("insert into students values(1,'u')");

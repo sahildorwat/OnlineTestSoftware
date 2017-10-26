@@ -1,6 +1,8 @@
 package bean;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.sql.SQLException;
@@ -46,7 +48,7 @@ public class Professor {
 		System.out.println("4.View Report");
 		System.out.println("5.Setup TA");
 		System.out.println("6.View/Add Exercises");
-		System.out.println("7.Search/Add");
+		System.out.println("7.Search/Add Questions");
 		System.out.println("8.Add/Remove Questions from Exercises");
 		Integer option =sc.nextInt();
 		
@@ -77,7 +79,46 @@ public class Professor {
 		}
 	}
 	
-	public void viewAddExercises() throws SQLException{
+	public void searchAddQuestions() {
+		while(true){
+			System.out.println("1.Search Questions");
+			System.out.println("2.Add Questions");
+			System.out.println(("3.Exit"));
+			Integer option = sc.nextInt();
+			int flag=0;
+			switch(option){
+				case 1:viewQuestions();break;
+				case 2:addQuestions();break;
+				case 3:flag=1;break;
+			}
+			if(flag==1) break;
+		}
+	}
+	public void viewQuestions(){
+		while(true){
+			System.out.println("1.Search By Questions");
+			System.out.println("2.Search By Topics");
+			System.out.println(("3.Exit"));
+			Integer option = sc.nextInt();
+			int flag=0;
+			switch(option){
+				case 1:searchByQuestions();break;
+				case 2:searchByTopics();break;
+				case 3:flag=1;break;
+			}
+			if(flag==1) break;
+		}
+	}
+    public void searchByQuestions(){
+		
+	}
+    public void searchByTopics(){
+		
+	}
+    public void addQuestions(){
+		
+	}
+	public void viewAddExercises() throws SQLException, ParseException{
 		while(true){
 			System.out.println("1.View Exercises");
 			System.out.println("2.Add Exercises");
@@ -111,8 +152,50 @@ public class Professor {
 			System.out.println(ex);
 		}
 	}
-	public void addExercises(){
+	public void addExercises() throws SQLException, ParseException{
+
+		System.out.println("Please provide the exercise name:");
+		String name=sc.next();
+		System.out.println("Please provide the exercise start time:");
+		String start_Date1 =sc.next();
+		SimpleDateFormat formatter=new SimpleDateFormat("dd-MMM-yy");  
+		Date start_Date=formatter.parse(start_Date1);
+		Timestamp ts_start = new Timestamp(start_Date.getTime());
+		System.out.println("Please provide the exercise end time:");
+		String end_Date1 =sc.next();
+		Date end_Date=formatter.parse(start_Date1);
+		Timestamp ts_end = new Timestamp(end_Date.getTime());
+		System.out.println("Please provide the total questions:");
+		Integer total_questions=sc.nextInt();
+		System.out.println("Please provide the points per question:");
+		Integer points_questions=sc.nextInt();
+		System.out.println("Please provide the penalty per questions:");
+		Integer penalty_questions=sc.nextInt();
+		System.out.println("Please provide the scoring policy");
+		Integer scoring_policy=sc.nextInt();
+		System.out.println("Please provide the num of retries:");
+		Integer num_retries=sc.nextInt();
+		System.out.println("Please provide the howmework_type:");
+		String home_work_type=sc.next();
+		ResultSet ws= qr.selectQueries("select max(id) as id from exercises");
+		Integer id = -1;
+		if(ws.next())
+			id = ws.getInt("id");
 		
+		String query = "INSERT INTO exercises VALUES (?,?,?,?,?,?,?,?,?,?)";
+		PreparedStatement ps = qr.conn.prepareStatement(query);
+		ps.setInt(1,id+1);
+		ps.setString(2, name);
+		ps.setTimestamp(3, ts_start);
+		ps.setTimestamp(4, ts_end);
+		ps.setInt(5,total_questions);
+		ps.setInt(6,penalty_questions);
+		ps.setInt(7,points_questions);
+		ps.setInt(8,scoring_policy);
+		ps.setInt(9,num_retries);
+		ps.setString(10, home_work_type);
+		ps.execute();
+		ps.close();			
 	}
 	public void setUpTa(){
 		System.out.println("Please tell the student_id of student(TA):");
@@ -238,7 +321,7 @@ public class Professor {
 	}
 	
 	
-	public void viewAddCourses() throws ParseException{
+	public void viewAddCourses() throws ParseException, SQLException{
 		System.out.println("1.Search by course");
 		System.out.println("2.Add Courses");
 		Integer option =sc.nextInt();
@@ -269,22 +352,37 @@ public class Professor {
 		}
 	}
 
-	public void addCourse() throws ParseException{
-			System.out.println("Please enter course_id and course_name" );
+	public void addCourse() throws ParseException, SQLException{
+			System.out.println("Please enter course_id" );
 			String course_id =sc.next();
+			System.out.println("Please enter course_name" );
 			String course_name =sc.next();
+			course_name+=sc.nextLine();
 			qr.updateQueries("INSERT INTO COURSES VALUES('"+course_id+"','"+course_name+"')");
-			System.out.println("Please enter course Instructor_id,startdate and enddate");
+			System.out.println("Please enter course Instructor_id");
 			Integer instructor_id =sc.nextInt();
+			System.out.println("Please enter course startdate");
 			String start_Date1 =sc.next();
+			System.out.println("Please enter course enddate");
 			SimpleDateFormat formatter=new SimpleDateFormat("dd-MMM-yy");  
 			Date start_Date=formatter.parse(start_Date1);
+			Timestamp ts_start = new Timestamp(start_Date.getTime());
 			String end_date1 =sc.next();
 			Date end_date=formatter.parse(end_date1);
+			Timestamp ts_end = new Timestamp(end_date.getTime());
+			
 			System.out.println(instructor_id);
 			System.out.println(start_Date);
 			System.out.println(end_date);
-			qr.updateQueries("INSERT INTO TEACHES VALUES("+instructor_id+",'"+course_id+"','"+start_Date+"','"+end_date+"')");
+			String query = "INSERT INTO teaches VALUES (?,?,?,?)";
+			PreparedStatement ps = qr.conn.prepareStatement(query);
+			ps.setInt(1,instructor_id);
+			ps.setString(2, course_id);
+			ps.setTimestamp(3, ts_start);
+			ps.setTimestamp(4, ts_end);
+			ps.execute();
+			ps.close();	
+			System.out.println("Successfully added value");
 			while(true){
 				int flag=0;
 				System.out.println("1.Add students");
@@ -311,6 +409,7 @@ public class Professor {
 			stud.id =sc.nextInt();
 			stud.lvl=sc.next();
 			stud.name=sc.next();
+			stud.name+=sc.nextLine();
 			stud.user_id=sc.next();
 			stud.password=sc.next();
 			qr.updateQueries("INSERT INTO STUDENTS VALUES("+stud.id+",'"+stud.lvl+"','"+stud.name+"','"+stud.user_id+"','"+stud.password+"')");
