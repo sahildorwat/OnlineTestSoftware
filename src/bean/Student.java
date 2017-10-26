@@ -124,7 +124,7 @@ public class Student {
 				else {
 					rs = qr.selectQueries("select * from exercise_mapping where course_id='" + option + "'");
 					if(rs.next()) {
-						ex.showHomeworkMenu(rs);
+						ex.showHomeworkMenu(rs, id);
 					} else {
 						System.out.println("Invalid Course ID, Check formatting!");
 					}
