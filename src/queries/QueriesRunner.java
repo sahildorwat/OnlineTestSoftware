@@ -43,7 +43,7 @@ public class QueriesRunner {
     }
     
     public void updateQueries(String sql){
-        try {
+    	try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
 //            Connection conn = null;
 //            Statement stmt = null;
@@ -71,6 +71,7 @@ public class QueriesRunner {
 		try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             try {
+//            		System.out.println(sql);
 //                conn = DriverManager.getConnection(GdConnection.jdbcURL, GdConnection.user, GdConnection.passwd);
 //                stmt = conn.createStatement();
                 this.stmt.executeUpdate(sql);
