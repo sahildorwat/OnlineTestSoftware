@@ -159,7 +159,7 @@ public class Professor {
 					ResultSet ss= qr.selectQueries("select score from attempts where id=(select max(attempt_id) from student_attempts_exercises where student_id='"+stud.id+"'and exercise_id="+exer.id+")");
 					if(ss.next()){
 						Integer max_score =ss.getInt("score");
-						System.out.print(stud.id+"  "+stud.name+"  "+exer.name+"  "+max_score);
+						System.out.println(stud.id+"  "+stud.name+"  "+exer.name+"  "+max_score);
 					}
 					else{
 						System.out.println(stud.id+"  "+stud.name+"  "+exer.name+"   0");
@@ -177,7 +177,7 @@ public class Professor {
 					ResultSet qw=qr.selectQueries("select avg(score) as score from student_attempts_exercises s, attempts a where s.student_id ="+stud.id+" and s.exercise_id ="+exer.id+" and s.attempt_id = a.id group by s.exercise_id, s.student_id");
 					if(qw.next()){
 						Integer max_score =qw.getInt("score");
-						System.out.print(stud.id+"  "+stud.name+"  "+exer.name+"  "+max_score);
+						System.out.println(stud.id+"  "+stud.name+"  "+exer.name+"  "+max_score);
 					}
 					else{
 						System.out.println(stud.id+"  "+stud.name+"  "+exer.name+"   0");
