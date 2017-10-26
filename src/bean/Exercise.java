@@ -31,11 +31,11 @@ public class Exercise {
 			System.out.println("Press 0 to Go Back to Previous Menu");
 			System.out.print("Enter Choice: ");
 			
-			String option = sc.next();
+			Integer option = sc.nextInt();
 			switch(option) {
-				case "0": return;
-				case "1": currentHWs(); break;
-				case "2": pastHWs(); break;
+				case 0: return;
+				case 1: currentHWs(); break;
+				case 2: pastHWs(); break;
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
