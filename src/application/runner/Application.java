@@ -1,6 +1,7 @@
 package application.runner;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import  java.util.Scanner;
 
 import connection.GdConnection;
@@ -19,7 +20,7 @@ public class Application {
 		System.out.flush();
 
 	}
-	public static void login() throws SQLException{
+	public static void login() throws SQLException, ParseException{
 		ResultSet rs = null;
 		ResultSet ss = null;
 		ResultSet ws = null;
@@ -74,7 +75,7 @@ public class Application {
 		}
 		
 	}
-	public static void mainpage() throws SQLException{
+	public static void mainpage() throws SQLException, ParseException{
 		while(true){
 			System.out.println("StartMenu:");
 			System.out.println("1. Login");
@@ -93,7 +94,7 @@ public class Application {
 			}
 		}
 	}
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) throws SQLException, ParseException {
 		mainpage();
 		qr.closeConnection();
 	}
