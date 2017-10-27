@@ -109,6 +109,7 @@ public class Student {
 			rs = qr.selectQueries("select * from courses c, enrollment e where c.id=e.course_id and e.student_id="+this.id);
 			try {
 				int no = 0;
+				System.out.println();
 				System.out.println("List of Current Courses: ");
 				while(rs.next()) {
 					no++;
@@ -126,7 +127,7 @@ public class Student {
 					if(rs.next()) {
 						ex.showHomeworkMenu(rs, id);
 					} else {
-						rs = qr.selectQueries("select * from courses where course_id='" + option + "'");
+						rs = qr.selectQueries("select * from courses where id='" + option + "'");
 						if(rs.next()) {
 							System.out.println("No homework exists for " + option);
 						} else {

@@ -100,16 +100,21 @@ public class Exercise {
 		{
 			ResultSet ex = qr.selectQueries("select count(*) as cnt from student_attempts_exercises s where s.student_id = " + id + " and s.exercise_id = " + exer.id);
 			int res = 0;
+			String sp = "";
 			System.out.println();
 			while (ex.next()) {
 				res = ex.getInt("cnt");
 			}
 			System.out.println("List of past homeworks: ");		
-//				sc = qr.selectQueries("select * from scoring_policies s where id = " + rs.getInt("scoring_policy_id"));
+			rs = qr.selectQueries("select * from scoring_policies s where s.id = " + exer.scoring_policy_id);
+			if(rs.next()) {
+				sp = rs.getString("vals");
+			}
 			System.out.println("Name: " + exer.name);
 			System.out.println("Start time: " + exer.start_time);
 			System.out.println("End time: " + exer.end_time);
 			System.out.println("Homework type: " + exer.homework_type);
+			System.out.println("Scoring Methodology: " + sp);
 			System.out.println("Total points: " + (exer.total_questions * exer.points_per_question));
 			System.out.println("Maximum allowed retries: " + exer.num_of_retries);
 			System.out.println("Attempts by the student: " + res);
