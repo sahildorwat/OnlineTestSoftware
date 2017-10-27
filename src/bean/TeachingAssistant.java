@@ -9,6 +9,11 @@ import java.util.Scanner;
 import queries.QueriesRunner;
 
 public class TeachingAssistant extends Student{
+	String lvl;
+	Integer id;
+	String name;
+	String user_id;
+	String password;
 	static QueriesRunner qr = QueriesRunner.getInstance();
 	static Scanner sc = new Scanner(System.in);
 	
@@ -245,7 +250,33 @@ public class TeachingAssistant extends Student{
 	}
 	
 	public void viewHomeworks() {
-		
+		// need to remove part of taking input
+		System.out.println("Please provide course_id:");
+		String course_id=sc.next();
+		int flag=0;
+		ResultSet ws= qr.selectQueries("select * from exercises e, exercise_mapping em where e.id = em.exercise_id and em.course_id = '" + course_id + "'");
+		try {
+			while(ws.next()){
+				flag=1;
+				Exercise ex =new Exercise();
+				ex.id=ws.getInt("id");
+				ex.name=ws.getString("name");
+				ex.start_time=ws.getDate("start_time");
+				ex.end_time=ws.getDate("end_time");
+				ex.total_questions=ws.getInt("TOTAL_QUESTIONS");
+				ex.penalty_per_question=(float) ws.getInt("PENALTY_PER_QUESTION");
+				ex.points_per_question=(float) ws.getInt("POINTS_PER_QUESTION");
+				ex.scoring_policy_id=ws.getInt("SCORING_POLICY_ID");
+				ex.num_of_retries=ws.getInt("NUM_OF_RETRIES");
+				System.out.println(ex);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(flag==0){
+			System.out.println("This Course has no homeworks.");
+		}
 	}
 
 	public void viewCourseMenu(String id) {
