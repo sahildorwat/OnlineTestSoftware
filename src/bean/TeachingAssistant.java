@@ -2,8 +2,13 @@ package bean;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Scanner;
+
+import queries.QueriesRunner;
 
 public class TeachingAssistant extends Student{
+	static QueriesRunner qr = QueriesRunner.getInstance();
+	static Scanner sc = new Scanner(System.in);
 	
 	public void loginAsTeachingAssistant(ResultSet rs){
 		try {
@@ -61,6 +66,8 @@ public class TeachingAssistant extends Student{
 	}
 	
 	public void viewCourses() {
+		System.out.println();
+		System.out.println("Courses as TA");
 		
 	}
 }
