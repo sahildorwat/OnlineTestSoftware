@@ -105,7 +105,54 @@ public class TeachingAssistant extends Student{
 	}
 	
 	public void enrollordrop(){
-		
+		int flag=0;
+		while(true){
+			System.out.println("1.Enroll a student");
+			System.out.println("2.Drop a student");
+			System.out.println("3.Exit");
+			Integer option=sc.nextInt();
+			switch(option){
+				case 1:try {
+					enrollStudent();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}break;
+				case 2:dropStudent();break;
+				case 3:flag=1;break;
+			}
+			if(flag==1) break;
+		}
+	}
+	
+	public void enrollStudent() throws SQLException{
+		System.out.println("Please provide course_id:");
+		String course_id=sc.next();
+		Student stud = new Student();
+		System.out.println("1.New Student\n2.Available Student");
+		Integer option=sc.nextInt();
+		if(option==2){
+			System.out.println("Please enter id of the student:");
+			Integer id=sc.nextInt();
+			qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"',"+id+")");
+		}else{
+			System.out.println("Please enter level, name,user_id, password");
+			stud.lvl=sc.next();
+			stud.name=sc.next();
+			stud.user_id=sc.next();
+			stud.password=sc.next();
+			ResultSet ws= qr.selectQueries("select max(id) as id from students");
+			if(ws.next()){
+				stud.id=ws.getInt("id")+1;
+				qr.updateQueries("INSERT INTO STUDENTS VALUES("+stud.id+",'"+stud.lvl+"','"+stud.name+"','"+stud.user_id+"','"+stud.password+"')");
+				qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"',"+stud.id+")");
+			}
+		}
+	}
+	public void dropStudent(){
+		System.out.println("Please provide the id of student to be deleted:");
+		Integer id=sc.nextInt();
+		qr.updateQueries("DELETE FROM STUDENTS WHERE ID="+id+"");
 	}
 	
 	public void viewReport() {
