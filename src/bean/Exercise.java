@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -79,7 +80,7 @@ public class Exercise {
 		rs = qr.selectQueries("select * from exercises e where e.end_time <= CURRENT_TIMESTAMP" ); // need to add start time condition
 		ArrayList<Exercise> listExercise = new ArrayList<Exercise>();
 		while(rs.next()){
-			System.out.println("after end time");
+			System.out.println();
 			Exercise exer=new Exercise();
 			exer.name = rs.getString("name");
 			exer.start_time = rs.getDate("start_time");
@@ -93,29 +94,57 @@ public class Exercise {
 			exer.id = rs.getInt("id");
 			listExercise.add(exer);
 		}
-		for(Exercise exer : listExercise) {
+		/*for(Exercise exer : listExercise) {
 			System.out.println(exer);
-		}
+		}*/
 		for(Exercise exer :listExercise)
 		{
-			ResultSet ex = qr.selectQueries("select count(*) as cnt from student_attempts_exercises s where s.student_id = " + id + " and s.exercise_id = " + exer.id);
 			int res = 0;
-			System.out.println("dkajdhaddsadk"+exer.id);
-			while (ex.next()) {
-				res = ex.getInt("cnt");
+			String sp = "";
+			System.out.println();
+			rs = qr.selectQueries("select count(*) as cnt from student_attempts_exercises s where s.student_id = " + id + " and s.exercise_id = " + exer.id);
+			if(rs.next()) {
+				res = rs.getInt("cnt");
 			}
 			System.out.println("List of past homeworks: ");		
-//				sc = qr.selectQueries("select * from scoring_policies s where id = " + rs.getInt("scoring_policy_id"));
+			rs = qr.selectQueries("select * from scoring_policies s where s.id = " + exer.scoring_policy_id);
+			if(rs.next()) {
+				sp = rs.getString("vals");
+			}
+			ArrayList<Double> scores = new ArrayList<Double>();
+			rs = qr.selectQueries("select a.score from student_attempts_exercises s, attempts a where a.id = s.attempt_id and s.student_id = " + id + " and s.exercise_id = " + exer.id + " order by a.attempt_no");
+			while(rs.next()) {
+				scores.add(rs.getDouble("score"));
+			}
 			System.out.println("Name: " + exer.name);
 			System.out.println("Start time: " + exer.start_time);
 			System.out.println("End time: " + exer.end_time);
 			System.out.println("Homework type: " + exer.homework_type);
+			System.out.println("Scoring Methodology: " + sp);
+			System.out.println("Score: " + this.getScore(scores, exer.scoring_policy_id));
 			System.out.println("Total points: " + (exer.total_questions * exer.points_per_question));
 			System.out.println("Maximum allowed retries: " + exer.num_of_retries);
 			System.out.println("Attempts by the student: " + res);
 		}
 	}
 	
+	private Double getScore(ArrayList<Double> scores, Integer scoring_policy_id) {
+		Double final_score = 0.0;
+		Double sum = 0.0;
+		if(!scores.isEmpty()) {
+			switch(scoring_policy_id) {
+				case 1: final_score = scores.get(scores.size()-1); break;
+				case 2: final_score = Collections.max(scores); break;
+				case 3: for(Double i: scores) {
+							sum += i;
+						}
+						final_score = sum / scores.size();
+						break;
+			}
+		}
+		return final_score;
+	}
+
 	public Integer getId() {
 		return id;
 	}

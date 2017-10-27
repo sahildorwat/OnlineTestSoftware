@@ -109,6 +109,7 @@ public class Student {
 			rs = qr.selectQueries("select * from courses c, enrollment e where c.id=e.course_id and e.student_id="+this.id);
 			try {
 				int no = 0;
+				System.out.println();
 				System.out.println("List of Current Courses: ");
 				while(rs.next()) {
 					no++;
@@ -119,14 +120,19 @@ public class Student {
 				System.out.println("Press 0 to Go Back to Previous Menu");
 				String option = sc.next();
 				
-				if(option == "0")
+				if(option.equals("0"))
 					return;
 				else {
 					rs = qr.selectQueries("select * from exercise_mapping where course_id='" + option + "'");
 					if(rs.next()) {
 						ex.showHomeworkMenu(rs, id);
 					} else {
-						System.out.println("Invalid Course ID, Check formatting!");
+						rs = qr.selectQueries("select * from courses where id='" + option + "'");
+						if(rs.next()) {
+							System.out.println("No homework exists for " + option);
+						} else {
+							System.out.println("Invalid Course ID, Check formatting!");
+						}
 					}
 				}
 			} catch (SQLException e) {
