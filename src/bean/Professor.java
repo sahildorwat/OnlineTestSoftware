@@ -363,7 +363,7 @@ public class Professor {
 		qr.updateQueries("INSERT INTO COURSES_TO_TA VALUES("+this.id+",'"+course_id+"',"+id+")");
 	}
 	public void viewReport() throws SQLException{
-		System.out.println("Please provide course_id:");
+		System.out.println("Please provide course_id: ");
 		String course_id=sc.next();
 		int flag=0;
 		ResultSet ws= qr.selectQueries("select e.scoring_policy_id as sp_id,e.id as e_id,e.name as name from exercises e,exercise_mapping em where e.id=em.exercise_id and em.course_id='"+course_id+"'");
@@ -388,10 +388,6 @@ public class Professor {
 			flag=1;
 			for(Student stud :listStudent)
 			{
-//				Integer student_id=rs.getInt("student_id");
-//				String student_name =rs.getString("name");
-//				System.out.println(student_name);
-//				System.out.println(exercise_id);
 				if(exer.scoring_policy_id==1){
 					ResultSet ss= qr.selectQueries("select score from attempts where id=(select max(attempt_id) from student_attempts_exercises where student_id='"+stud.id+"'and exercise_id="+exer.id+")");
 					if(ss.next()){
@@ -422,7 +418,7 @@ public class Professor {
 				}
 			}
 		}if(flag==0){
-			System.out.println("This Course has no exercises ,Please Enter different course");
+			System.out.println("This Course has no exercises. Please Enter different course");
 			viewReport();
 		}
 		
@@ -455,7 +451,7 @@ public class Professor {
 			Integer id=sc.nextInt();
 			qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"',"+id+")");
 		}else{
-			System.out.println("Please enter level ,name,user_id,password");
+			System.out.println("Please enter level, name, user_id, password");
 			stud.lvl=sc.next();
 			stud.name=sc.next();
 			stud.user_id=sc.next();

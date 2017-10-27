@@ -2,6 +2,7 @@ package bean;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -157,7 +158,90 @@ public class TeachingAssistant extends Student{
 	}
 	
 	public void viewReport() {
-		
+		System.out.println("Please provide course_id:");
+		String course_id=sc.next();
+		int flag=0;
+		ResultSet ws= qr.selectQueries("select e.scoring_policy_id as sp_id,e.id as e_id,e.name as name from exercises e,exercise_mapping em where e.id=em.exercise_id and em.course_id='"+course_id+"'");
+		ArrayList<Exercise> listExercise=new ArrayList<Exercise>();
+		try {
+			while(ws.next()){
+				Exercise exer=new Exercise();
+				exer.scoring_policy_id=ws.getInt("sp_id");
+				exer.id=ws.getInt("e_id");
+				exer.name=ws.getString("name");
+				listExercise.add(exer);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for(Exercise exer :listExercise)
+			{
+			ResultSet rs= qr.selectQueries("select e.student_id,s.name as name from enrollment e,students s where e.student_id=s.id and course_id='"+course_id+"'");
+			ArrayList<Student> listStudent=new ArrayList<Student>();
+			try {
+				while(rs.next()){
+					Student stud=new Student();
+					stud.id=rs.getInt("student_id");
+					stud.name=rs.getString("name");
+					listStudent.add(stud);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			flag=1;
+			for(Student stud :listStudent)
+			{
+				if(exer.scoring_policy_id==1){
+					ResultSet ss= qr.selectQueries("select score from attempts where id=(select max(attempt_id) from student_attempts_exercises where student_id='"+stud.id+"'and exercise_id="+exer.id+")");
+					try {
+						if(ss.next()){
+							Integer max_score =ss.getInt("score");
+							System.out.println(stud.id+"  "+stud.name+"  "+exer.name+"  "+max_score);
+						}
+						else{
+							System.out.println(stud.id+"  "+stud.name+"  "+exer.name+"   0");
+						}
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}else if(exer.scoring_policy_id==2){
+					ResultSet qz=qr.selectQueries("select max(score) as score from student_attempts_exercises s, attempts a where s.student_id ="+stud.id+" and s.exercise_id ="+exer.id+" and s.attempt_id = a.id group by s.exercise_id, s.student_id");
+					try {
+						if(qz.next()){
+							Integer max_score =qz.getInt("score");
+							System.out.print(stud.id+"  "+stud.name+"  "+exer.name+"  "+max_score);
+						}
+						else{
+							System.out.println(stud.id+"  "+stud.name+"  "+exer.name+"   0");
+						}
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}else{
+					ResultSet qw=qr.selectQueries("select avg(score) as score from student_attempts_exercises s, attempts a where s.student_id ="+stud.id+" and s.exercise_id ="+exer.id+" and s.attempt_id = a.id group by s.exercise_id, s.student_id");
+					try {
+						if(qw.next()){
+							Integer max_score =qw.getInt("score");
+							System.out.println(stud.id+"  "+stud.name+"  "+exer.name+"  "+max_score);
+						}
+						else{
+							System.out.println(stud.id+"  "+stud.name+"  "+exer.name+"   0");
+						}
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		}if(flag==0){
+			System.out.println("This Course has no exercises. Please Enter different course");
+			viewReport();
+		}
+	
 	}
 	
 	public void viewHomeworks() {
