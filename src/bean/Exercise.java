@@ -79,7 +79,7 @@ public class Exercise {
 		rs = qr.selectQueries("select * from exercises e where e.end_time <= CURRENT_TIMESTAMP" ); // need to add start time condition
 		ArrayList<Exercise> listExercise = new ArrayList<Exercise>();
 		while(rs.next()){
-			System.out.println("after end time");
+			System.out.println();
 			Exercise exer=new Exercise();
 			exer.name = rs.getString("name");
 			exer.start_time = rs.getDate("start_time");
@@ -93,14 +93,14 @@ public class Exercise {
 			exer.id = rs.getInt("id");
 			listExercise.add(exer);
 		}
-		for(Exercise exer : listExercise) {
+		/*for(Exercise exer : listExercise) {
 			System.out.println(exer);
-		}
+		}*/
 		for(Exercise exer :listExercise)
 		{
 			ResultSet ex = qr.selectQueries("select count(*) as cnt from student_attempts_exercises s where s.student_id = " + id + " and s.exercise_id = " + exer.id);
 			int res = 0;
-			System.out.println("dkajdhaddsadk"+exer.id);
+			System.out.println();
 			while (ex.next()) {
 				res = ex.getInt("cnt");
 			}
