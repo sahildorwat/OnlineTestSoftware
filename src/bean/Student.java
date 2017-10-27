@@ -123,6 +123,7 @@ public class Student {
 				if(option.equals("0"))
 					return;
 				else {
+					option = option.toUpperCase();
 					rs = qr.selectQueries("select * from exercise_mapping where course_id='" + option + "'");
 					if(rs.next()) {
 						ex.showHomeworkMenu(rs, id);

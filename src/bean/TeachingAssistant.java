@@ -2,8 +2,10 @@ package bean;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Scanner;
 
+import connection.GdConnection;
 import queries.QueriesRunner;
 
 public class TeachingAssistant extends Student{
@@ -159,26 +161,35 @@ public class TeachingAssistant extends Student{
 		
 	}
 	
-	public void viewCourseMenu(String id, String name) {
-		System.out.println();
-		System.out.println("Course: " + id + " - " + name);
-		System.out.println("Start Date: ");
-		System.out.println("End Date: ");
-		System.out.println("End Date: ");
-		System.out.println("1. View Report: ");
-		System.out.println("2. View Homeworks: ");
-		System.out.println("Press 0 to Go Back to Previous Menu");
-		System.out.print("Enter choice: ");
-		String option = sc.next();
-		
-		if(option.equals("0"))
-			return;
+	public void viewCourseMenu(String id) {
+		ResultSet rs = null;
+		rs = qr.selectQueries("select * from teaches t, courses c where c.id=t.course_id and c.id='"+id+"'");
+		try {
+			if(rs.next()) {
+				System.out.println();
+				System.out.println("Course: " + id + " - " + rs.getString("name"));
+				System.out.println("Professor: " + rs.getInt("professor_id"));
+				System.out.println("Start Date: " + (Date)rs.getTimestamp("start_date"));
+				System.out.println("End Date: " + (Date)rs.getTimestamp("end_date"));
+				System.out.println("1. View Report ");
+				System.out.println("2. View Homeworks ");
+				System.out.println("Press 0 to Go Back to Previous Menu");
+				System.out.print("Enter choice: ");
+				String option = sc.next();
+				
+				if(option.equals("0"))
+					return;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void viewCourses() {
 		ResultSet rs = null;
 		while(true) {
-			rs = qr.selectQueries("select c.course_id, cr.name from courses_to_ta c, courses cr where cr.id=c.course_id and ta_id="+this.id);
+			rs = qr.selectQueries("select c.course_id, cr.name from courses_to_ta c, courses cr where cr.id=c.course_id and c.ta_id="+this.id);
 			try {
 				int no = 0;
 				System.out.println();
@@ -194,12 +205,18 @@ public class TeachingAssistant extends Student{
 				if(option.equals("0"))
 					return;
 				else {
-					viewCourseMenu(rs.getString("course_id"), rs.getString("name"));
+					option = option.toUpperCase();
+					rs = qr.selectQueries("select c.id from courses c, courses_to_ta cr where c.id=cr.course_id and cr.ta_id=" + this.id +" and c.id='" + option + "'");
+					if(rs.next()) {
+						viewCourseMenu(rs.getString("id"));
+					} else {
+						System.out.println("Invalid Course ID");
+					}
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}			
 		}
 	}
 }
