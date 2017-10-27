@@ -112,9 +112,47 @@ public class TeachingAssistant extends Student{
 		
 	}
 	
-	public void viewCourses() {
+	public void viewCourseMenu(String id, String name) {
 		System.out.println();
-		System.out.println("Courses as TA");
+		System.out.println("Course: " + id + " - " + name);
+		System.out.println("Start Date: ");
+		System.out.println("End Date: ");
+		System.out.println("End Date: ");
+		System.out.println("1. View Report: ");
+		System.out.println("2. View Homeworks: ");
+		System.out.println("Press 0 to Go Back to Previous Menu");
+		System.out.print("Enter choice: ");
+		String option = sc.next();
 		
+		if(option.equals("0"))
+			return;
+	}
+	
+	public void viewCourses() {
+		ResultSet rs = null;
+		while(true) {
+			rs = qr.selectQueries("select c.course_id, cr.name from courses_to_ta c, courses cr where cr.id=c.course_id and ta_id="+this.id);
+			try {
+				int no = 0;
+				System.out.println();
+				System.out.println("List of Courses as TA: ");
+				while(rs.next()) {
+					no++;
+					System.out.println(no + ". " + rs.getString("course_id") + " - " + rs.getString("name"));
+				}
+				System.out.println("Please Provide Course ID (eg. CSCxxx): ");
+				System.out.println("Press 0 to Go Back to Previous Menu");
+				String option = sc.next();
+				
+				if(option.equals("0"))
+					return;
+				else {
+					viewCourseMenu(rs.getString("course_id"), rs.getString("name"));
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }
