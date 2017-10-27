@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.Scanner;
 
-import connection.GdConnection;
 import queries.QueriesRunner;
 
 public class TeachingAssistant extends Student{
@@ -161,6 +160,10 @@ public class TeachingAssistant extends Student{
 		
 	}
 	
+	public void viewHomeworks() {
+		
+	}
+
 	public void viewCourseMenu(String id) {
 		ResultSet rs = null;
 		rs = qr.selectQueries("select * from teaches t, courses c where c.id=t.course_id and c.id='"+id+"'");
@@ -177,8 +180,11 @@ public class TeachingAssistant extends Student{
 				System.out.print("Enter choice: ");
 				String option = sc.next();
 				
-				if(option.equals("0"))
-					return;
+				switch(option) {
+					case "0": return;
+					case "1": viewReport(); break;
+					case "2": viewHomeworks(); break;
+				}
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
