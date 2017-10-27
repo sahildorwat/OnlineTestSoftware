@@ -94,9 +94,7 @@ public class Exercise {
 			exer.id = rs.getInt("id");
 			listExercise.add(exer);
 		}
-		/*for(Exercise exer : listExercise) {
-			System.out.println(exer);
-		}*/
+		
 		for(Exercise exer :listExercise)
 		{
 			int res = 0;
