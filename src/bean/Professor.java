@@ -72,14 +72,86 @@ public class Professor {
 				viewAddExercises();
 				break;
 			}else if(option==7){
+				searchAddQuestions();
 				break;
 			}else if(option==8){
+				addRemoveQuestionsFromExercises();
 				break;
 			}
 		}
 	}
+	public void addRemoveQuestionsFromExercises() throws SQLException {
+		while(true){
+			System.out.println("1.Add Questions from Exercise");
+			System.out.println("2.Remove Questions from Exercise");
+			System.out.println(("3.Exit"));
+			Integer option = sc.nextInt();
+			int flag=0;
+			switch(option){
+				case 1:addQuestionsToExercises();break;
+				case 2:removeQuestionsFromExercises();break;
+				case 3:flag=1;break;
+			}
+			if(flag==1) break;
+		}
+	}
 	
-	public void searchAddQuestions() {
+	public void addQuestionsToExercises() throws SQLException {
+		System.out.println("Please Enter Exercise Id");
+		Integer id = sc.nextInt();
+		ResultSet ws= qr.selectQueries("select * from exercises where id="+id);
+		if(ws.next());
+		String ex_type = ws.getString("homework_type");
+		if(ex_type.equalsIgnoreCase("Adaptive")){
+			addAdaptiveQuestions(id);
+			return;
+		}
+			
+		
+	}
+	public void addAdaptiveQuestions(Integer ex_id) throws SQLException {
+		ResultSet ws= qr.selectQueries("select * from topics");
+		while(ws.next()){
+			Integer topic_id = ws.getInt("id");
+			String name = ws.getString("name");
+			
+			System.out.println("topic_id = "+topic_id);
+			System.out.println("name = "+ name);
+		} 	
+		System.out.println("Please enter topic id of Adaptive Exam");
+		Integer topic = sc.nextInt();
+		ws= qr.selectQueries("select max(id) as id from exercise_questions");
+		int eq_id = -1;
+		if(ws.next())
+			eq_id = ws.getInt("id") + 1;
+		else
+			eq_id = 1;
+		ws= qr.selectQueries("select id from questions where questions.topic_id="+topic);
+		List<Integer> vals = new ArrayList<Integer>();
+		while(ws.next()){
+			vals.add(ws.getInt("id"));
+		}
+		for(Integer val:vals){
+			qr.updateQueries("insert into exercise_questions values("+ eq_id +","+val+","+ex_id+")");
+			eq_id++;
+		}
+
+	}
+	public void removeQuestionsFromExercises() throws SQLException {
+		System.out.println("Please Enter Exercise Id");
+		Integer id = sc.nextInt();
+		ResultSet ws= qr.selectQueries("select questions.id as id, questions.actual_text as at from exercise_questions, questions where questions.id = exercise_questions.question_id and exercise_questions.exercise_id="+id);
+		while(ws.next()){
+			Integer q_id = ws.getInt("id");
+			String act = ws.getString("at");
+			System.out.println("id = "+q_id+" actual text = "+act);
+		}
+		System.out.println("enter the question id");
+		Integer q_id = sc.nextInt();
+		qr.updateQueries("delete from exercise_questions where question_id="+q_id);
+	}
+	
+	public void searchAddQuestions() throws SQLException {
 		while(true){
 			System.out.println("1.Search Questions");
 			System.out.println("2.Add Questions");
@@ -94,7 +166,7 @@ public class Professor {
 			if(flag==1) break;
 		}
 	}
-	public void viewQuestions(){
+	public void viewQuestions() throws SQLException{
 		while(true){
 			System.out.println("1.Search By Questions");
 			System.out.println("2.Search By Topics");
@@ -109,15 +181,64 @@ public class Professor {
 			if(flag==1) break;
 		}
 	}
-    public void searchByQuestions(){
-		
+    public void searchByQuestions() throws SQLException{
+    	System.out.println("Enter Question id");
+    	Integer id = sc.nextInt();
+    	ResultSet ws= qr.selectQueries("select * from questions where id="+id);
+		while(ws.next()){
+			String actual_text = ws.getString("actual_text");
+			String detailed_explanation = ws.getString("detailed_explanation");
+			String hint = ws.getString("hint");
+			Integer difficulty_level = ws.getInt("difficulty_level");
+			Integer topic_id = ws.getInt("topic_id");
+			System.out.println("id = "+id);
+			System.out.println("actual_text = "+actual_text);
+			System.out.println("detailed_explanation = "+detailed_explanation);
+			System.out.println("difficulty_level = "+difficulty_level);
+			System.out.println("hint = "+hint);
+			System.out.println("topic_id = "+topic_id);
+			
+			
+			
+		} 	
 	}
-    public void searchByTopics(){
-		
+    public void searchByTopics() throws SQLException{
+    	System.out.println("Enter topic");
+    	String topic = sc.next();
+    	topic+=sc.nextLine();
+    	ResultSet ws= qr.selectQueries("select * from questions where id in (select id from topics where name like '%"+topic+"%')");
+		while(ws.next()){
+			String actual_text = ws.getString("actual_text");
+			String detailed_explanation = ws.getString("detailed_explanation");
+			String hint = ws.getString("hint");
+			Integer difficulty_level = ws.getInt("difficulty_level");
+			Integer topic_id = ws.getInt("topic_id");
+			System.out.println("id = "+id);
+			System.out.println("actual_text = "+actual_text);
+			System.out.println("detailed_explanation = "+detailed_explanation);
+			System.out.println("difficulty_level = "+difficulty_level);
+			System.out.println("hint = "+hint);
+			System.out.println("topic_id = "+topic_id);	
+		} 	
 	}
-    public void addQuestions(){
-		
-	}
+    public void addQuestions() throws SQLException{
+    	ResultSet ws= qr.selectQueries("select max(id) as id from questions");
+		Integer id = -1;
+		if(ws.next())
+			id = ws.getInt("id")+1;
+		System.out.println("Enter Question Text");
+		String actual_text = sc.next();
+		System.out.println("Enter detailed explanation");
+		String detailed_explanation = sc.next();
+		System.out.println("Enter hint");
+		String hint = sc.next();
+		System.out.println("Enter difficulty_level");
+		Integer difficulty_level = sc.nextInt();
+		System.out.println("Enter topic_id");
+		Integer topic_id = sc.nextInt();
+		qr.updateQueries("INSERT INTO Questions VALUES("+id+",'"+actual_text+"','"+detailed_explanation+"','"+hint+"',"+difficulty_level+","+topic_id+")");		
+    } 	
+	
 	public void viewAddExercises() throws SQLException, ParseException{
 		while(true){
 			System.out.println("1.View Exercises");
