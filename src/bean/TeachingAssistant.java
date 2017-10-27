@@ -18,8 +18,7 @@ public class TeachingAssistant extends Student{
 				System.out.println("1. View Profile");
 				System.out.println("2. View Courses");
 				System.out.println("3. Enroll/Drop a student");
-				System.out.println("4. View Report");
-				System.out.println("5. Logout");
+				System.out.println("4. Logout");
 				System.out.print("Enter Choice: ");				
 
 				int option = sc.nextInt();
@@ -36,10 +35,7 @@ public class TeachingAssistant extends Student{
 						enrollordrop();
 						break;
 					}else if(option==4){
-						viewReport();
-						break;
-					}else if(option==5){
-						break;
+						return;
 					}
 				}				
 				
@@ -61,6 +57,10 @@ public class TeachingAssistant extends Student{
 	}
 	
 	public void viewReport() {
+		
+	}
+	
+	public void viewCourses() {
 		
 	}
 }
