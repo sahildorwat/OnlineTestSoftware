@@ -105,9 +105,47 @@ public class Professor {
 		if(ex_type.equalsIgnoreCase("Adaptive")){
 			addAdaptiveQuestions(id);
 			return;
-		}
+		}addQuestionsStandard(id);
 			
 		
+	}
+	public void addQuestionsStandard(Integer ex_id) throws SQLException{
+		ResultSet ws= qr.selectQueries("select * from topics");
+		while(ws.next()){
+			Integer topic_id = ws.getInt("id");
+			String name = ws.getString("name");
+			
+			System.out.println("topic_id = "+topic_id);
+			System.out.println("name = "+ name);
+		} 	
+		System.out.println("Please enter topic id of Standard Exam");
+		Integer topic = sc.nextInt();
+		ws= qr.selectQueries("select max(id) as id from exercise_questions");
+		int eq_id = -1;
+		if(ws.next())
+			eq_id = ws.getInt("id") + 1;
+		else
+			eq_id = 1;
+		ws= qr.selectQueries("select id, actual_text from questions where questions.topic_id="+topic);
+		List<Integer> vals = new ArrayList<Integer>();
+		while(ws.next()){
+			vals.add(ws.getInt("id"));
+			String act  = ws.getString("actual_text");
+			System.out.println("id = "+id +", actual_text="+ act);
+		}
+		while(true){
+			System.out.println("please enter question to be added");
+			Integer q_id = sc.nextInt();
+			qr.updateQueries("insert into exercise_questions values("+ eq_id +","+q_id+","+ex_id+")");
+			eq_id++;
+			System.out.println("Do yo want to enter more? (1 = y, 0 = n)");
+			Integer op = sc.nextInt();
+			if(op.equals(0))
+				break;
+		}
+		
+		
+				
 	}
 	public void addAdaptiveQuestions(Integer ex_id) throws SQLException {
 		ResultSet ws= qr.selectQueries("select * from topics");
