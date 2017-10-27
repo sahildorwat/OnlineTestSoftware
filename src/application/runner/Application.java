@@ -53,7 +53,7 @@ public class Application {
 				if(option == 1){
 					stud.loginAsStudent(ws);
 					System.out.println(stud);
-				}else{
+				}else if(option == 2){
 					ta.loginAsTeachingAssistant(ws);
 					System.out.println(ta);
 				}
