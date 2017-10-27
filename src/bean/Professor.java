@@ -377,11 +377,6 @@ public class Professor {
 		}
 		for(Exercise exer :listExercise)
 			{
-//			Integer sp_id=ws.getInt("sp_id");
-//			System.out.println(sp_id);
-//			Integer exercise_id=ws.getInt("e_id");
-//			System.out.println(exercise_id);
-//			String exercise_name=ws.getString("name");
 			ResultSet rs= qr.selectQueries("select e.student_id,s.name as name from enrollment e,students s where e.student_id=s.id and course_id='"+course_id+"'");
 			ArrayList<Student> listStudent=new ArrayList<Student>();
 			while(rs.next()){
