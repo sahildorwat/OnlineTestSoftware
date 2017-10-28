@@ -135,18 +135,61 @@ public class Exercise {
 			
 			for(int index = 0; index < attempt_ids.size(); index++)
 			{
-				System.out.println("Attempt #"+index);
+				System.out.println("Attempt #"+(index+1));
 				ArrayList<Integer> question_ids = new ArrayList<Integer>();
 				ArrayList<Integer> selected_ans_ids = new ArrayList<Integer>();
-				System.out.println("attempt_id loop: " + attempt_ids.get(index));
 				rs = qr.selectQueries("select * from exercise_question_set eqs where eqs.attempt_id = " + (int)attempt_ids.get(index));
 				while(rs.next())
 				{
 					question_ids.add(rs.getInt("eq_id"));
 					selected_ans_ids.add(rs.getInt("selected_ans"));
 				}
-				System.out.println("Questions asked : " +question_ids.toString());
-				System.out.println("Selected answers are : " +selected_ans_ids.toString());
+				
+				System.out.println("Questions asked in the attempt : " + question_ids.toString());
+				System.out.println("Answers selected in the attempt : " + selected_ans_ids.toString());
+				
+				ArrayList<ArrayList<String>> solutions = new ArrayList<ArrayList<String>>();
+				for(int q_index = 0; q_index < question_ids.size(); q_index++)
+				{
+					ArrayList<String> per_question_solution = new ArrayList<String>();
+					// Need to add the relationship between parameters too for question 3
+					rs = qr.selectQueries("select ans.answer_text from answers ans, answer_set ans_set where ans_set.question_id= " + (int)question_ids.get(q_index) + " and ans.answer_set_id = ans_set.id and ans.is_correct = 1");
+					while(rs.next())
+					{
+						per_question_solution.add(rs.getString("answer_text"));
+					}
+					solutions.add(per_question_solution);
+					System.out.println("Solutions for question #" + (q_index+1) +": " + per_question_solution.toString());
+				}
+				
+				ArrayList<String> is_correct_list = new ArrayList<String>();
+				for(int q_index = 0; q_index < solutions.size(); q_index++)
+				{
+					is_correct_list.add("incorrect");
+					if(solutions.get(q_index).contains(selected_ans_ids.get(q_index).toString()))
+					{
+						is_correct_list.set(is_correct_list.size()-1,"correct");
+						continue;
+					}
+				}
+				
+
+				System.out.println("Selected answers are correct or not : " + is_correct_list.toString());
+				ArrayList<Float> points_earned = new ArrayList<Float>();
+				for(int q_index = 0; q_index < is_correct_list.size(); q_index++)
+				{
+					if(is_correct_list.get(q_index).equalsIgnoreCase("correct"))
+					{
+						points_earned.add(exer.points_per_question);
+					}
+					else if(is_correct_list.get(q_index).equalsIgnoreCase("incorrect"))
+					{
+						points_earned.add(exer.penalty_per_question);
+					}
+					
+				}
+					System.out.println("Points earned per question : " + points_earned.toString());
+					System.out.println("Total points for this attempt : "+ scores.get(index));
 				System.out.println();
 			}
 				
