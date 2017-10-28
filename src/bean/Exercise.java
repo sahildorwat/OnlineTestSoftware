@@ -131,26 +131,25 @@ public class Exercise {
 			while(rs.next())
 			{
 				attempt_ids.add(rs.getInt("id"));
-				System.out.println("attempt_id: " + rs.getInt("id"));
 			}
 			
-			ArrayList<Integer> question_ids = new ArrayList<Integer>();
-			ArrayList<Integer> selected_ans_ids = new ArrayList<Integer>();
 			for(int index = 0; index < attempt_ids.size(); index++)
 			{
+				System.out.println("Attempt #"+index);
+				ArrayList<Integer> question_ids = new ArrayList<Integer>();
+				ArrayList<Integer> selected_ans_ids = new ArrayList<Integer>();
 				System.out.println("attempt_id loop: " + attempt_ids.get(index));
-				rs = qr.selectQueries("select * from exercise_question_set eqs where eqs.attempt_id = " + attempt_ids.get(index));
-				rs.next();
-				System.out.println(rs.getInt("eq_id"));
-				rs.next();
-				System.out.println(rs.getInt("eq_id"));
-				/*while(rs.next())
+				rs = qr.selectQueries("select * from exercise_question_set eqs where eqs.attempt_id = " + (int)attempt_ids.get(index));
+				while(rs.next())
 				{
 					question_ids.add(rs.getInt("eq_id"));
 					selected_ans_ids.add(rs.getInt("selected_ans"));
-				}*/
+				}
+				System.out.println("Questions asked : " +question_ids.toString());
+				System.out.println("Selected answers are : " +selected_ans_ids.toString());
+				System.out.println();
 			}
-			System.out.println(question_ids.toString());	
+				
 			
 			
 			
