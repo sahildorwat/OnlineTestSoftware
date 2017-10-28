@@ -109,7 +109,7 @@ public class Student {
 			rs = qr.selectQueries("select * from courses c, enrollment e where c.id=e.course_id and e.student_id="+this.id);
 			try {
 				int no = 0;
-				System.out.println();
+				System.out.println();	
 				System.out.println("List of Current Courses: ");
 				while(rs.next()) {
 					no++;

@@ -39,8 +39,9 @@ public class Exercise {
 		this.student_attempts = new ArrayList<Attempt>();
 	}
 	
-	public void showHomeworkMenu(ResultSet rs, Integer id) {
-		this.id = id;
+	public void showHomeworkMenu(ResultSet rs, Integer student_id) {
+		//this.id = rs.getInt("exercise_id");
+		System.out.println("student_id = " + student_id);
 		try {
 			System.out.println("Homework Menu for " + rs.getString("course_id"));
 			System.out.println("1. Current Open HWs");
@@ -51,8 +52,8 @@ public class Exercise {
 			Integer option = sc.nextInt();
 			switch(option) {
 				case 0: return;
-				case 1: currentHWs(); break;
-				case 2: pastHWs(); break;
+				case 1: currentHWs(rs); break;
+				case 2: pastHWs(rs, student_id); break;
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -60,7 +61,7 @@ public class Exercise {
 		}
 	}
 	
-	public void currentHWs() {
+	public void currentHWs(ResultSet inputRS) {
 		ResultSet rs = null;
 		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP and e.start_time >= CURRENT_TIMESTAMP");
 		System.out.println("List of available homeworks: ");
@@ -75,9 +76,9 @@ public class Exercise {
 		System.out.println("1. Attempt Homework");
 	}
 	
-	public void pastHWs() throws SQLException {
+	public void pastHWs(ResultSet inputRS, Integer student_id) throws SQLException {	
 		ResultSet rs = null;
-		rs = qr.selectQueries("select * from exercises e where e.end_time <= CURRENT_TIMESTAMP and e.start_time >= CURRENT_TIMESTAMP" );
+		rs = qr.selectQueries("select * from exercises e" );
 		ArrayList<Exercise> listExercise = new ArrayList<Exercise>();
 		while(rs.next()){
 			System.out.println();
@@ -100,7 +101,7 @@ public class Exercise {
 			int res = 0;
 			String sp = "";
 			System.out.println();
-			rs = qr.selectQueries("select count(*) as cnt from student_attempts_exercises s where s.student_id = " + id + " and s.exercise_id = " + exer.id);
+			rs = qr.selectQueries("select count(*) as cnt from student_attempts_exercises s where s.student_id = " + student_id + " and s.exercise_id = " + exer.id);
 			if(rs.next()) {
 				res = rs.getInt("cnt");
 			}
@@ -110,7 +111,7 @@ public class Exercise {
 				sp = rs.getString("vals");
 			}
 			ArrayList<Double> scores = new ArrayList<Double>();
-			rs = qr.selectQueries("select a.score from student_attempts_exercises s, attempts a where a.id = s.attempt_id and s.student_id = " + id + " and s.exercise_id = " + exer.id + " order by a.attempt_no");
+			rs = qr.selectQueries("select a.score from student_attempts_exercises s, attempts a where a.id = s.attempt_id and s.student_id = " + student_id + " and s.exercise_id = " + exer.id + " order by a.attempt_no");
 			while(rs.next()) {
 				scores.add(rs.getDouble("score"));
 			}
@@ -123,6 +124,36 @@ public class Exercise {
 			System.out.println("Total points: " + (exer.total_questions * exer.points_per_question));
 			System.out.println("Maximum allowed retries: " + exer.num_of_retries);
 			System.out.println("Attempts by the student: " + res);
+			
+			System.out.println("Detailed Report for Each Attempt :");
+			ArrayList<Integer> attempt_ids = new ArrayList<Integer>();
+			rs = qr.selectQueries("select a.id from student_attempts_exercises s, attempts a where a.id = s.attempt_id and s.student_id = " + student_id + " and s.exercise_id = " + exer.id + " order by a.attempt_no");
+			while(rs.next())
+			{
+				attempt_ids.add(rs.getInt("id"));
+				System.out.println("attempt_id: " + rs.getInt("id"));
+			}
+			
+			ArrayList<Integer> question_ids = new ArrayList<Integer>();
+			ArrayList<Integer> selected_ans_ids = new ArrayList<Integer>();
+			for(int index = 0; index < attempt_ids.size(); index++)
+			{
+				System.out.println("attempt_id loop: " + attempt_ids.get(index));
+				rs = qr.selectQueries("select * from exercise_question_set eqs where eqs.attempt_id = " + attempt_ids.get(index));
+				rs.next();
+				System.out.println(rs.getInt("eq_id"));
+				rs.next();
+				System.out.println(rs.getInt("eq_id"));
+				/*while(rs.next())
+				{
+					question_ids.add(rs.getInt("eq_id"));
+					selected_ans_ids.add(rs.getInt("selected_ans"));
+				}*/
+			}
+			System.out.println(question_ids.toString());	
+			
+			
+			
 		}
 	}
 	
