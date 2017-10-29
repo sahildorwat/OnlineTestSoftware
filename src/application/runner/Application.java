@@ -4,15 +4,24 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import  java.util.Scanner;
 
-import connection.GdConnection;
+import javax.swing.*;
 
+import java.awt.event.*;
+import java.awt.*;
+
+import connection.GdConnection;
 import bean.Professor;
 import bean.Student;
 import bean.TeachingAssistant;
 
 
 import queries.QueriesRunner;
-public class Application {
+public class Application extends JFrame{
+	/**
+	 * 
+	 */
+	private JPanel content_pane;
+	private static final long serialVersionUID = 1L;
 	static QueriesRunner qr = QueriesRunner.getInstance();
 	static Scanner sc=new Scanner(System.in);
 	public static void clearScreen() {  
@@ -20,7 +29,7 @@ public class Application {
 		System.out.flush();
 
 	}
-	public static void login() throws SQLException, ParseException{
+	public void login() throws SQLException, ParseException{
 		ResultSet rs = null;
 		ResultSet ss = null;
 		ResultSet ws = null;
@@ -75,8 +84,44 @@ public class Application {
 		}
 		
 	}
-	public static void mainpage() throws SQLException, ParseException{
-		while(true){
+	public void mainpage() throws SQLException, ParseException{
+		
+		
+		setLocation(400, 300);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		content_pane = new JPanel();
+		JLabel lbl= new JLabel("StartMenu : ");
+				
+		JButton btn = new JButton("LOGIN");
+		btn.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			clearScreen();
+			System.out.println("Login");
+			try {
+				login();
+			} catch (SQLException | ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}});;
+		
+		JButton btn2 = new JButton("EXIT");
+		btn2.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			System.out.println("Exit");
+			qr.closeConnection();
+			
+			return;
+		}});;
+		
+		content_pane.add(lbl);
+		content_pane.add(btn);
+		content_pane.add(btn2);
+		getContentPane().add(content_pane);
+		pack();
+		/*while(true){
+			
+			
 			System.out.println("StartMenu:");
 			System.out.println("1. Login");
 			System.out.println("2. Exit");
@@ -93,10 +138,12 @@ public class Application {
 				return;
 			}
 		}
-	}
+*/	}
 	public static void main(String[] args) throws SQLException, ParseException {
-		mainpage();
-		qr.closeConnection();
+		Application app = new Application();
+		app.setVisible(true);
+		app.mainpage();
+		//qr.closeConnection();
 	}
 
 }
