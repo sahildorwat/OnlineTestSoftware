@@ -659,11 +659,14 @@ public class Professor extends JFrame{
 				System.out.println(name);
 				String ename=ws.getString("e_name");
 				System.out.println(ename);
+				JLabel out_label = new JLabel("id : "+id+", course_name : "+ name + ", exercise_name : "+ename);
+				answers.add(out_label);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		pack();
 	}
 
 	public void addCourse() throws ParseException, SQLException{
