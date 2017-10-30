@@ -20,7 +20,10 @@ public class Application extends JFrame{
 	/**
 	 * 
 	 */
-	private JPanel content_pane;
+	private JPanel content_pane = null;
+	final JTextField user_tf = new JTextField(10);
+	final JTextField pwd_tf = new JTextField(10);
+	JLabel error_label = new JLabel("");
 	private static final long serialVersionUID = 1L;
 	static QueriesRunner qr = QueriesRunner.getInstance();
 	static Scanner sc=new Scanner(System.in);
@@ -33,10 +36,14 @@ public class Application extends JFrame{
 		ResultSet rs = null;
 		ResultSet ss = null;
 		ResultSet ws = null;
+		
 		System.out.println("Enter Username");
-		String user_id=sc.next();
+		//String user_id=sc.next();
+		String user_id = user_tf.getText();
 		System.out.println("Enter password");
-		String password=sc.next();
+		//String password=sc.next();
+		String password = pwd_tf.getText();
+		
 		Student stud =new Student();
 		TeachingAssistant ta =new TeachingAssistant();
 		Professor prof=new Professor();
@@ -46,6 +53,8 @@ public class Application extends JFrame{
 		if(ss.next()){
 			//professor login
 			System.out.println("Welcome Prof:"+ ss);
+			prof.setVisible(true);
+			dispose();
 			prof.loginAsProfessor(ss);
 			System.out.println(prof);
 			GdConnection.close(ss);
@@ -60,9 +69,13 @@ public class Application extends JFrame{
 				System.out.println("2.login as TA");
 				int option=sc.nextInt();
 				if(option == 1){
+					stud.setVisible(true);
+					dispose();
 					stud.loginAsStudent(ws);
 					System.out.println(stud);
 				}else if(option == 2){
+					ta.setVisible(true);
+					dispose();
 					ta.loginAsTeachingAssistant(ws);
 					System.out.println(ta);
 				}
@@ -86,12 +99,23 @@ public class Application extends JFrame{
 	}
 	public void mainpage() throws SQLException, ParseException{
 		
+		if(!(content_pane == null))
+		{
+			user_tf.setText("");
+			pwd_tf.setText("");
+			error_label.setText("Invalid login details");
+			content_pane.removeAll();
+		}
 		
-		setLocation(400, 300);
+		setLocation(800, 600);
+		setPreferredSize(new Dimension(1024,768));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		content_pane = new JPanel();
+		content_pane = new JPanel(new GridLayout(4,1));
 		JLabel lbl= new JLabel("StartMenu : ");
-				
+		
+		JLabel username_label = new JLabel("Username : ");
+		JLabel pwd_label = new JLabel("Password : ");
+			
 		JButton btn = new JButton("LOGIN");
 		btn.addActionListener(new ActionListener(){
 		public void actionPerformed(ActionEvent ae){
@@ -110,11 +134,17 @@ public class Application extends JFrame{
 		public void actionPerformed(ActionEvent ae){
 			System.out.println("Exit");
 			qr.closeConnection();
-			
+			dispose();
 			return;
 		}});;
 		
+		
 		content_pane.add(lbl);
+		content_pane.add(error_label);
+		content_pane.add(username_label);
+		content_pane.add(user_tf);
+		content_pane.add(pwd_label);
+		content_pane.add(pwd_tf);
 		content_pane.add(btn);
 		content_pane.add(btn2);
 		getContentPane().add(content_pane);

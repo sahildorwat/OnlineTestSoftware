@@ -1,5 +1,7 @@
 package bean;
 
+import java.awt.*;
+import java.awt.event.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
@@ -11,9 +13,11 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Date;
 
+import javax.swing.*;
+
 import queries.QueriesRunner;
 
-public class Professor {
+public class Professor extends JFrame{
 	Integer id;
 	String name;
 	String user_id;
@@ -27,6 +31,12 @@ public class Professor {
 		this.courses=new ArrayList<Course>();
 	}
 	
+	private JPanel content_pane = null;
+	private JPanel output_panel = null;
+	private JPanel main_panel = new JPanel();
+	private JPanel options = new JPanel(new GridLayout(2,1));
+	private JPanel answers = new JPanel(new GridLayout(2,1));
+	private static final long serialVersionUID = 1L;
 	static Scanner sc=new Scanner(System.in);
 	static QueriesRunner qr = QueriesRunner.getInstance();
 	public  void loginAsProfessor(ResultSet rs) throws ParseException{
@@ -42,6 +52,116 @@ public class Professor {
 		}
 	}
 	public void showOptions() throws ParseException, SQLException{
+		if(!(content_pane==null))
+		{
+			content_pane.removeAll();
+		}
+		
+		setLocation(800, 600);
+		setPreferredSize(new Dimension(1024,768));
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+		main_panel.setLayout(new BoxLayout(main_panel, BoxLayout.Y_AXIS));
+
+
+		content_pane = new JPanel(new GridLayout(4,1));
+		output_panel = new JPanel(new GridLayout(4,1));
+				
+		JButton btn1 = new JButton("1.View Profile");
+		JButton btn2 = new JButton("2.View/Add Courses");
+		JButton btn3 = new JButton("3.Enroll/Drop A Student");
+		JButton btn4 = new JButton("4.View Report");
+		JButton btn5 = new JButton("5.Setup TA");
+		JButton btn6 = new JButton("6.View/Add Exercises");
+		JButton btn7 = new JButton("7.Search/Add Questions");
+		JButton btn8 = new JButton("8.Add/Remove Questions from Exercises");
+		
+		btn1.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			viewProfile();
+		}});;
+
+		btn2.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+			try {
+				viewAddCourses();
+			} catch (ParseException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}});;
+
+		btn3.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			try {
+				enrolDropStudent();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}});;
+
+		btn4.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+			try {
+				viewReport();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}});;
+
+		btn5.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+			setUpTa();
+		}});;
+
+		btn6.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+			try {
+				viewAddExercises();
+			} catch (SQLException | ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}});;
+
+		btn7.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+			try {
+				searchAddQuestions();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}});;
+								
+		btn8.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+			try {
+				addRemoveQuestionsFromExercises();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}});;						
+		
+		content_pane.add(btn1);
+		content_pane.add(btn2);
+		content_pane.add(btn3);
+		content_pane.add(btn4);
+		content_pane.add(btn5);
+		content_pane.add(btn6);
+		content_pane.add(btn7);
+		content_pane.add(btn8);
+		//content_pane.add(output_panel);
+		main_panel.add(content_pane);
+		main_panel.add(output_panel);
+		//getContentPane().add(content_pane);
+		getContentPane().add(main_panel);
+		pack();
+
+		/*
 		System.out.println("1.View Profile");
 		System.out.println("2.View/Add Courses");
 		System.out.println("3.Enroll/Drop A Student");
@@ -79,6 +199,7 @@ public class Professor {
 				break;
 			}
 		}
+		*/
 	}
 	public void addRemoveQuestionsFromExercises() throws SQLException {
 		while(true){
@@ -488,7 +609,32 @@ public class Professor {
 	
 	
 	public void viewAddCourses() throws ParseException, SQLException{
-		System.out.println("1.Search by course");
+		output_panel.removeAll();
+		
+		JButton btn1 = new JButton("1.Search by course");
+		JButton btn2 = new JButton("2.Add Courses");
+		
+		btn1.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			searchByCourse();
+		}});
+			
+		btn2.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			try {
+				addCourse();
+			} catch (ParseException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}});
+		
+		options.add(btn1);
+		options.add(btn2);
+		output_panel.add(options);
+		output_panel.add(answers);
+		pack();
+	/*	System.out.println("1.Search by course");
 		System.out.println("2.Add Courses");
 		Integer option =sc.nextInt();
 		if(option==1){
@@ -496,6 +642,8 @@ public class Professor {
 		}else{
 			addCourse();
 		}
+		*/
+		
 	}
 	//select * from courses,exercise_mapping,exercises where courses.id = exercise_mapping.course_id and exercise_mapping.exercise_id = exercises.id
 	public void searchByCourse(){
@@ -597,7 +745,10 @@ public class Professor {
 		}
 	}
 	public void viewProfile(){
+		output_panel.removeAll();
 		System.out.println(this);
+		JLabel out_label = new JLabel(this.toString());
+		output_panel.add(out_label);
 		getCoursesForProfessor();
 		
 	}
@@ -613,11 +764,14 @@ public class Professor {
 				temp.start_date=(Date)ss.getTimestamp("start_date");
 				temp.end_date=(Date)ss.getTimestamp("end_date");
 				System.out.println(temp);
+				JLabel out_label = new JLabel(temp.toString());
+				output_panel.add(out_label);
 				this.courses.add(temp);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		pack();
 	}
 	public String getUser_id() {
 		return user_id;

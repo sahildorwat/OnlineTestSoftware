@@ -4,10 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
+import javax.swing.JFrame;
+
 import connection.GdConnection;
 import queries.QueriesRunner;
 
-public class Student {
+public class Student extends JFrame{
 	String lvl;
 	Integer id;
 	String name;
