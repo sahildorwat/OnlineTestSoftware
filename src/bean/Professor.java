@@ -34,8 +34,31 @@ public class Professor extends JFrame{
 	private JPanel content_pane = null;
 	private JPanel output_panel = null;
 	private JPanel main_panel = new JPanel();
-	private JPanel options = new JPanel(new GridLayout(2,1));
-	private JPanel answers = new JPanel(new GridLayout(2,1));
+	private JPanel options = new JPanel(new GridLayout(4,1));
+	private JPanel answers = new JPanel(new GridLayout(8,1));
+	
+	JTextField course_number; 
+	JLabel error_label;
+	JTextField course_text;
+	JTextField course_name_text;
+	JTextField prof_id_text;
+	JTextField start_date_text;
+	JTextField end_date_text;
+	JTextField topic_id_text;
+	JTextField topic_name_text;
+	JTextField id_text;
+	JTextField level_text;
+	JTextField name_text;
+	JTextField user_id_text;
+	JTextField pwd_text;
+	JTextField enroll_text;
+	JTextField drop_text;
+	JTextField stud_id;
+	JTextField stud_level;
+	JTextField stud_name;
+	JTextField stud_id1;
+	JTextField pwd_id;
+	
 	private static final long serialVersionUID = 1L;
 	static Scanner sc=new Scanner(System.in);
 	static QueriesRunner qr = QueriesRunner.getInstance();
@@ -62,7 +85,6 @@ public class Professor extends JFrame{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		main_panel.setLayout(new BoxLayout(main_panel, BoxLayout.Y_AXIS));
-
 
 		content_pane = new JPanel(new GridLayout(4,1));
 		output_panel = new JPanel(new GridLayout(4,1));
@@ -562,8 +584,31 @@ public class Professor extends JFrame{
 		
 	}
 	public void enrolDropStudent() throws SQLException{
-		int flag=0;
-		while(true){
+		//int flag=0;
+		options.removeAll();
+		answers.removeAll();
+		
+		JButton btn1 = new JButton("1.Enroll a student");
+		btn1.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			try {
+				enrollStudent();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}});
+		
+		JButton btn2 = new JButton("1.Drop a student");
+		btn2.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			dropStudent();
+		}});
+		
+		options.add(btn1);
+		options.add(btn2);
+		pack();
+	/*	while(true){
 			System.out.println("1.Enroll a student");
 			System.out.println("2.Drop a student");
 			System.out.println("3.Exit");
@@ -574,44 +619,143 @@ public class Professor extends JFrame{
 				case 3:flag=1;break;
 			}
 			if(flag==1) break;
-		}
+		}*/
 	}
 	
 	public void enrollStudent() throws SQLException{
-		System.out.println("Please provide course_id:");
-		String course_id=sc.next();
-		Student stud = new Student();
-		System.out.println("1.New Student\n2.Available Student");
-		Integer option=sc.nextInt();
-		if(option==2){
-			System.out.println("Please enter id of the student:");
-			Integer id=sc.nextInt();
-			qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"',"+id+")");
-		}else{
-			System.out.println("Please enter level, name, user_id, password");
-			stud.lvl=sc.next();
-			stud.name=sc.next();
-			stud.user_id=sc.next();
-			stud.password=sc.next();
-			ResultSet ws= qr.selectQueries("select max(id) as id from students");
-			if(ws.next()){
-				stud.id=ws.getInt("id")+1;
-				qr.updateQueries("INSERT INTO STUDENTS VALUES("+stud.id+",'"+stud.lvl+"','"+stud.name+"','"+stud.user_id+"','"+stud.password+"')");
-				qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"',"+stud.id+")");
+		answers.removeAll();
+		JLabel c_id = new JLabel("Course_id : ");
+		course_number = new JTextField(10);
+		//System.out.println("Please provide course_id:");
+		//String course_id=sc.next();
+		JLabel s_id = new JLabel("Student_id : ");
+		stud_id = new JTextField(10);
+		
+		JButton btn1 = new JButton("1.Available Student");
+		btn1.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			try {
+				enrollAvailableStudent();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+		}});
+		
+		JLabel l_id = new JLabel("Student_Level(U/UG) : ");
+		stud_level = new JTextField(10);
+		
+		JLabel n_id = new JLabel("Student name : ");
+		stud_name = new JTextField(10);
+		
+		JLabel u_id = new JLabel("Student user_id : ");
+		stud_id1 = new JTextField(10);
+		
+		JLabel p_id = new JLabel("Student password : ");
+		pwd_id = new JTextField(10);
+		
+		JButton btn2 = new JButton("2.New Student");
+		btn2.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			try {
+				enrollNewStudent();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}});
+
+		answers.add(c_id);
+		answers.add(course_number);
+		answers.add(s_id);
+		answers.add(stud_id);
+		answers.add(btn1);
+		answers.add(l_id);
+		answers.add(stud_level);
+		answers.add(n_id);
+		answers.add(stud_name);
+		answers.add(u_id);
+		answers.add(stud_id1);
+		answers.add(p_id);
+		answers.add(pwd_id);
+		answers.add(btn2);
+		pack();
+				
+		//Student stud = new Student();
+		//System.out.println("1.New Student\n2.Available Student");
+		//Integer option=sc.nextInt();
+		//if(option==2){
+		//	System.out.println("Please enter id of the student:");
+		//	Integer id=sc.nextInt();
+		//	qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"',"+id+")");
+//		}else{
+	/*	System.out.println("Please enter level, name, user_id, password");
+		stud.lvl=sc.next();
+		stud.name=sc.next();
+		stud.user_id=sc.next();
+		stud.password=sc.next();
+		ResultSet ws= qr.selectQueries("select max(id) as id from students");
+		if(ws.next()){
+			stud.id=ws.getInt("id")+1;
+			qr.updateQueries("INSERT INTO STUDENTS VALUES("+stud.id+",'"+stud.lvl+"','"+stud.name+"','"+stud.user_id+"','"+stud.password+"')");
+			qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"',"+stud.id+")");
 		}
-	}
-	public void dropStudent(){
-		System.out.println("Please provide the id of student to be deleted:");
-		Integer id=sc.nextInt();
-		qr.updateQueries("DELETE FROM STUDENTS WHERE ID="+id+"");
+	}*/
 	}
 	
+	public void enrollAvailableStudent() throws SQLException{
+		qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_number.getText()+"',"+Integer.parseInt(stud_id.getText())+")");
+	}
+	
+	public void enrollNewStudent() throws SQLException{
+		
+		Student stud = new Student();
+		stud.lvl=stud_level.getText();
+		stud.name=stud_name.getText();
+		stud.user_id=stud_id1.getText();
+		stud.password=pwd_id.getText();
+		ResultSet ws= qr.selectQueries("select max(id) as id from students");
+		if(ws.next()){
+			stud.id=ws.getInt("id")+1;
+			qr.updateQueries("INSERT INTO STUDENTS VALUES("+stud.id+",'"+stud.lvl+"','"+stud.name+"','"+stud.user_id+"','"+stud.password+"')");
+			qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_number.getText()+"',"+stud.id+")");
+		}
+	}
+	
+	
+	public void dropStudent(){
+		answers.removeAll();
+		
+		JLabel c_label = new JLabel("Please provide the id of student to be deleted:");
+		stud_id = new JTextField(10);
+		
+		JButton btn = new JButton("Drop Student");
+		btn.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			ActuallyDropStudent();
+		}});
+		
+		answers.add(c_label);
+		answers.add(stud_id);
+		answers.add(btn);
+		pack();
+		//System.out.println("Please provide the id of student to be deleted:");
+		//Integer id=sc.nextInt();
+		
+	}
+	
+	public void ActuallyDropStudent()
+	{
+		qr.updateQueries("DELETE FROM STUDENTS WHERE ID="+Integer.parseInt(stud_id.getText()));
+	}
 	
 	public void viewAddCourses() throws ParseException, SQLException{
 		output_panel.removeAll();
 		
+		JLabel course_label = new JLabel("Enter Course Number.eg, CSC540");
+		course_number = new JTextField(10);
 		JButton btn1 = new JButton("1.Search by course");
+		error_label = new JLabel("");
 		JButton btn2 = new JButton("2.Add Courses");
 		
 		btn1.addActionListener(new ActionListener(){
@@ -629,7 +773,10 @@ public class Professor extends JFrame{
 			}
 		}});
 		
+		options.add(course_label);
+		options.add(course_number);
 		options.add(btn1);
+		options.add(error_label);
 		options.add(btn2);
 		output_panel.add(options);
 		output_panel.add(answers);
@@ -648,7 +795,8 @@ public class Professor extends JFrame{
 	//select * from courses,exercise_mapping,exercises where courses.id = exercise_mapping.course_id and exercise_mapping.exercise_id = exercises.id
 	public void searchByCourse(){
 		System.out.println("Enter the course to be searched:(Course_id)");
-		String option =sc.next();
+		//String option =sc.next();
+		String option = course_number.getText();
 		ResultSet ws= qr.selectQueries("select c.id as id,c.name as c_name,e.name as e_name from courses c,exercise_mapping em,exercises e where c.id = em.course_id and em.exercise_id = e.id and c.id='"+option+"'");
 		try {
 
@@ -660,7 +808,7 @@ public class Professor extends JFrame{
 				String ename=ws.getString("e_name");
 				System.out.println(ename);
 				JLabel out_label = new JLabel("id : "+id+", course_name : "+ name + ", exercise_name : "+ename);
-				answers.add(out_label);
+				options.add(out_label);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -669,84 +817,227 @@ public class Professor extends JFrame{
 		pack();
 	}
 
-	public void addCourse() throws ParseException, SQLException{
-			System.out.println("Please enter course_id" );
-			String course_id =sc.next();
-			System.out.println("Please enter course_name" );
-			String course_name =sc.next();
-			course_name+=sc.nextLine();
-			qr.updateQueries("INSERT INTO COURSES VALUES('"+course_id+"','"+course_name+"')");
-			System.out.println("Please enter course Instructor_id");
-			Integer instructor_id =sc.nextInt();
-			System.out.println("Please enter course startdate");
-			String start_Date1 =sc.next();
-			System.out.println("Please enter course enddate");
-			SimpleDateFormat formatter=new SimpleDateFormat("dd-MMM-yy");  
-			Date start_Date=formatter.parse(start_Date1);
-			Timestamp ts_start = new Timestamp(start_Date.getTime());
-			String end_date1 =sc.next();
-			Date end_date=formatter.parse(end_date1);
-			Timestamp ts_end = new Timestamp(end_date.getTime());
-			
-			System.out.println(instructor_id);
-			System.out.println(start_Date);
-			System.out.println(end_date);
-			String query = "INSERT INTO teaches VALUES (?,?,?,?)";
-			PreparedStatement ps = qr.conn.prepareStatement(query);
-			ps.setInt(1,instructor_id);
-			ps.setString(2, course_id);
-			ps.setTimestamp(3, ts_start);
-			ps.setTimestamp(4, ts_end);
-			ps.execute();
-			ps.close();	
-			System.out.println("Successfully added value");
-			while(true){
-				int flag=0;
-				System.out.println("1.Add students");
-				System.out.println("2.Add topics");
-				System.out.println(("3.Exit"));
-				Integer option =sc.nextInt();
-				switch(option){
-				case 1:addStudents(course_id);break;
-				case 2:addTopics(course_id);break;
-				case 3: flag =1;break;
-				}
-				if(flag==1){
-					break;
-				}
+	
+	public void actuallyAddCourse() throws ParseException, SQLException{
+		final String course_id = course_text.getText();
+		String course_name = course_name_text.getText();
+		Integer instructor_id = Integer.parseInt(prof_id_text.getText());
+		String start_Date1 = start_date_text.getText();
+		String end_date1 = end_date_text.getText();
+		//System.out.println("Please enter course_id" );
+		//String course_id =sc.next();
+		//System.out.println("Please enter course_name" );
+		//String course_name =sc.next();
+		//course_name+=sc.nextLine();
+		qr.updateQueries("INSERT INTO COURSES VALUES('"+course_id+"','"+course_name+"')");
+		//System.out.println("Please enter course Instructor_id");
+		//Integer instructor_id =sc.nextInt();
+		//System.out.println("Please enter course startdate");
+		//String start_Date1 =sc.next();
+		//System.out.println("Please enter course enddate");
+		SimpleDateFormat formatter=new SimpleDateFormat("dd-MMM-yy");  
+		Date start_Date=formatter.parse(start_Date1);
+		Timestamp ts_start = new Timestamp(start_Date.getTime());
+		//String end_date1 =sc.next();
+		Date end_date=formatter.parse(end_date1);
+		Timestamp ts_end = new Timestamp(end_date.getTime());
+		
+		System.out.println(instructor_id);
+		System.out.println(prof_id_text.getText());
+		System.out.println(start_Date);
+		System.out.println(end_date);
+		String query = "INSERT INTO teaches VALUES (?,?,?,?)";
+		PreparedStatement ps = qr.conn.prepareStatement(query);
+		ps.setInt(1,instructor_id);
+		ps.setString(2, course_id);
+		ps.setTimestamp(3, ts_start);
+		ps.setTimestamp(4, ts_end);
+		ps.execute();
+		ps.close();	
+		
+		System.out.println("Successfully added value");
+		options.removeAll();
+		JLabel course_label = new JLabel(course_name);
+		
+		JButton btn1 = new JButton("1.Add Students");
+		JButton btn2 = new JButton("2.Add Topics");
+		
+		btn1.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent ae){
+			addStudents(course_id);
+		}});
+		
+		btn2.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+			addTopics(course_id);
+		}});
+		
+		error_label.setText("");
+		options.add(course_label);
+		options.add(error_label);
+		options.add(btn1);
+		options.add(btn2);
+		pack();
+		/*while(true){
+			int flag=0;
+			System.out.println("1.Add students");
+			System.out.println("2.Add topics");
+			System.out.println(("3.Exit"));
+			Integer option =sc.nextInt();
+			switch(option){
+			case 1:addStudents(course_id);break;
+			case 2:addTopics(course_id);break;
+			case 3: flag =1;break;
 			}
+			if(flag==1){
+				break;
+			}
+		}*/
+		
 	}
-	public void addStudents(String course_id){
-		System.out.println("Please enter number of student you want to insert:");
-		Integer flag=sc.nextInt();
-		while(flag>0){
-			Student stud=new Student();
-			System.out.println("Please enter student details");
-			System.out.println("id level(U/G) name user_id password");
-			stud.id =sc.nextInt();
-			stud.lvl=sc.next();
-			stud.name=sc.next();
-			stud.name+=sc.nextLine();
-			stud.user_id=sc.next();
-			stud.password=sc.next();
-			qr.updateQueries("INSERT INTO STUDENTS VALUES("+stud.id+",'"+stud.lvl+"','"+stud.name+"','"+stud.user_id+"','"+stud.password+"')");
-			qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"','"+stud.id+"')");
-			flag--;
-		}
+	
+	public void addCourse() throws ParseException, SQLException{
+			answers.removeAll();
+			JLabel c_label = new JLabel("Please enter course_id" );
+			course_text = new JTextField(10);
+			
+			JLabel cn_label = new JLabel("Please enter course_name" );
+			course_name_text = new JTextField(10);
+			
+			JLabel pr_label = new JLabel("Please enter course Instructor Id" );
+			prof_id_text = new JTextField(10);
+			
+			JLabel start_label = new JLabel("Please enter course startdate(dd-MMM-yy)" );
+			start_date_text = new JTextField(10);
+			
+			JLabel end_label = new JLabel("Please enter course enddate(dd-MMM-yy)" );
+			end_date_text = new JTextField(10);
+			
+			JButton btn = new JButton("Add new course");
+			btn.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent ae){
+					try {
+						actuallyAddCourse();
+					} catch (ParseException | SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}});
+			
+			answers.add(c_label);
+			answers.add(course_text);
+			answers.add(cn_label);
+			answers.add(course_name_text);
+			answers.add(pr_label);
+			answers.add(prof_id_text);
+			answers.add(start_label);
+			answers.add(start_date_text);
+			answers.add(end_label);
+			answers.add(end_date_text);
+			answers.add(btn);
+			pack();
 	}
-	public void addTopics(String course_id){
-		System.out.println("Please enter number of topics you want to insert:");
-		Integer flag=sc.nextInt();
-		while(flag>0){
-			Topic tp=new Topic();
-			System.out.println("Please enter topic_id and name of the topic");
-			tp.id=sc.nextInt();
-			tp.name=sc.next();
-			qr.updateQueries("INSERT INTO TOPICS VALUES("+tp.id+",'"+tp.name+"')");
-			qr.updateQueries("INSERT INTO COURSES_TO_TOPICS VALUES('"+course_id+"',"+tp.id+")");
-			flag--;
-		}
+	
+	public void addStudents(final String course_id){
+		//System.out.println("Please enter number of student you want to insert:");
+		//Integer flag=sc.nextInt();
+		answers.removeAll();
+		JLabel stud_label = new JLabel("Please enter student details");
+		JLabel id_label = new JLabel("id");
+		id_text = new JTextField(10);
+		JLabel level_label = new JLabel("level(U/G)");
+		level_text = new JTextField(10);
+		JLabel name_label = new JLabel("name");
+		name_text = new JTextField(10);
+		JLabel user_id_label = new JLabel("user_id");
+		user_id_text = new JTextField(10);
+		JLabel pwd_label = new JLabel("password");
+		pwd_text = new JTextField(10);
+		JButton btn = new JButton("Add Student");
+		
+		//while(flag>0){
+		
+			
+			//System.out.println("Please enter student details");
+		//	System.out.println("id level(U/G) name user_id password");
+		//	stud.id =sc.nextInt();
+		//	stud.lvl=sc.next();
+		//	stud.name=sc.next();
+		//	stud.name+=sc.nextLine();
+		//	stud.user_id=sc.next();
+		//	stud.password=sc.next();
+		btn.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				ActuallyAddStudents(course_id);
+			}});
+			
+		answers.add(stud_label);
+		answers.add(id_label);
+		answers.add(id_text);
+		answers.add(level_label);
+		answers.add(level_text);
+		answers.add(name_label);
+		answers.add(name_text);
+		answers.add(user_id_label);
+		answers.add(user_id_text);
+		answers.add(pwd_label);
+		answers.add(btn);
+		pack();
+			//flag--;
+		//}
 	}
+	
+	public void ActuallyAddStudents(String course_id){
+		Student stud=new Student();
+		stud.id =Integer.parseInt(id_text.getText());
+		stud.lvl=level_text.getText();
+		stud.name=name_text.getText();
+		stud.user_id=user_id_text.getText();
+		stud.password=pwd_text.getText();
+		
+		qr.updateQueries("INSERT INTO STUDENTS VALUES("+stud.id+",'"+stud.lvl+"','"+stud.name+"','"+stud.user_id+"','"+stud.password+"')");
+		qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"','"+stud.id+"')");
+	}
+	
+	public void addTopics(final String course_id){
+		answers.removeAll();
+		JLabel t_label = new JLabel("Please enter topic_id" );
+		topic_id_text = new JTextField(10);
+		
+		JLabel tn_label = new JLabel("Please enter topic_name" );
+		topic_name_text = new JTextField(10);
+		
+		JButton btn = new JButton("Add new topic");
+		btn.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent ae){
+				actuallyAddTopic(course_id);
+			}});
+		
+		
+		answers.add(t_label);
+		answers.add(topic_id_text);
+		answers.add(tn_label);
+		answers.add(topic_name_text);
+		answers.add(btn);
+		pack();
+		//System.out.println("Please enter number of topics you want to insert:");
+		//Integer flag=sc.nextInt();
+		//while(flag>0){
+			
+		//	flag--;
+		//}
+	}
+	
+	public void actuallyAddTopic(String course_id){
+		Topic tp=new Topic();
+		System.out.println("Please enter topic_id and name of the topic");
+		tp.id=Integer.parseInt(topic_id_text.getText());
+		tp.name=topic_name_text.getText();
+		qr.updateQueries("INSERT INTO TOPICS VALUES("+tp.id+",'"+tp.name+"')");
+		qr.updateQueries("INSERT INTO COURSES_TO_TOPICS VALUES('"+course_id+"',"+tp.id+")");
+		
+	}
+	
 	public void viewProfile(){
 		output_panel.removeAll();
 		System.out.println(this);

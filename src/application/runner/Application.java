@@ -24,6 +24,7 @@ public class Application extends JFrame{
 	final JTextField user_tf = new JTextField(10);
 	final JTextField pwd_tf = new JTextField(10);
 	JLabel error_label = new JLabel("");
+	
 	private static final long serialVersionUID = 1L;
 	static QueriesRunner qr = QueriesRunner.getInstance();
 	static Scanner sc=new Scanner(System.in);
