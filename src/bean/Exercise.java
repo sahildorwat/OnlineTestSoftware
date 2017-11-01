@@ -159,7 +159,7 @@ public class Exercise {
 					ArrayList<String> per_question_solution = new ArrayList<String>();
 					// Need to add the relationship between parameters too for question 3
 						//Integer default_param = 1;
-					rs = qr.selectQueries("select ans.answer_text from answers ans, answer_set ans_set, exercise_question_set eqs where ans_set.question_id= " + (int)question_ids.get(q_index) + " and ans.answer_set_id = ans_set.id and ans.is_correct = 1 and ans_set.parameter_id = eqs.parameter_id and eqs.parameter_id!=null and eqs.attempt_id = " + (int)attempt_ids.get(index) );
+					rs = qr.selectQueries("select ans.answer_text from answers ans, answer_set ans_set, exercise_question_set eqs where ans_set.question_id= " + (int)question_ids.get(q_index) + " and ans.answer_set_id = ans_set.id and ans.is_correct = 1 and ans_set.parameter_id = eqs.parameter_id  and eqs.attempt_id = " + (int)attempt_ids.get(index) );
 					while(rs.next())
 					{
 						per_question_solution.add(rs.getString("answer_text"));
