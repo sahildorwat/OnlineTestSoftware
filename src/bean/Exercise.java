@@ -64,16 +64,21 @@ public class Exercise {
 	public void currentHWs(ResultSet inputRS) {
 		ResultSet rs = null;
 		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP and e.start_time >= CURRENT_TIMESTAMP");
-		System.out.println("List of available homeworks: ");
 		try {
 			while(rs.next()) {				
-				System.out.println(rs.getString("name"));
+				if (rs.getString("name") != null) {
+					System.out.println("List of available homeworks: ");
+					System.out.println(rs.getString("name"));
+					System.out.println("1. Attempt Homework");				
+				}
+			}
+			if (!rs.next() || rs.getString("name") == null) {
+				System.out.println("No active homeworks for this course!");
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("1. Attempt Homework");
 	}
 	
 	public void pastHWs(ResultSet inputRS, Integer student_id) throws SQLException {	
