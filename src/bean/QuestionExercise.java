@@ -6,6 +6,6 @@ public class QuestionExercise {
 	int question_id;
 	int exercise_id;
 	Integer parameter_id;
-	
+	Integer difficulty_level;
 	
 }
