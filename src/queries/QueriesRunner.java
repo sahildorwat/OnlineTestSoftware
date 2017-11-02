@@ -66,7 +66,7 @@ public class QueriesRunner {
         }
     }
 	public  ResultSet selectQueries(String sql){
-//		System.out.println(sql);
+		System.out.println(sql);
 		ResultSet rs = null;
 //		Connection conn = null;
 //        Statement stmt = null;

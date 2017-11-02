@@ -113,19 +113,7 @@ public class Exercise {
 			Integer param_id = rs.getInt("parameter_id");
 			q.question_id =  question_id;
 			q.parameter_id = param_id;
-		}
-		//System.out.println(question.length());
-		for(QuestionExercise qe: question){
-
-			if(qe.parameter_id==null){
-				if(viewSimpleQuestion(id,qe.question_id,student_id))
-					score+=3;
-				else
-					score-=1;
-			}
-			else{
-				viewParamQuestion(id,qe.question_id,qe.parameter_id,student_id);
-			}
+			question.add(q);
 		}
 		rs = qr.selectQueries("select max(id) as val from attempts");
 		Integer val = -1;
@@ -155,12 +143,40 @@ public class Exercise {
 		ps.setTimestamp(5, ts_end);
 		ps.execute();
 		ps.close();	
+		for(QuestionExercise qe: question){
+			System.out.println(qe.parameter_id);
+			if(qe.parameter_id==0){
+				if(viewSimpleQuestion(id,qe.question_id,student_id))
+					score+=3;
+				else
+					score-=1;
+			}
+			else{
+				viewParamQuestion(id,qe.question_id,qe.parameter_id,student_id);
+			}
+		}
+		
+		rs = qr.selectQueries("select max(id) as val from attempts");
+		ts_end = new Timestamp(System.currentTimeMillis());
+//		qr.updateQueries("insert into attempts values("+val+","+ attempt_no +"," + score +","+ts_start +","+ts_end+")");
+		System.out.println(score);
+		query = "UPDATE attempts set end_time = ?, score = ? where id = ?";
+		ps = qr.conn.prepareStatement(query);
+		ps.setTimestamp(1, ts_end);
+		ps.setInt(2,score);
+		ps.setInt(3,val);
+		ps.execute();
+		ps.close();	
+
 	}
 	
 	public boolean viewSimpleQuestion(Integer ex_id, Integer question_id,Integer student_id) throws SQLException{
 		ResultSet rs = null;
 		rs = qr.selectQueries("select actual_text from questions where id = " + question_id);
-		String text = rs.getString("actual_text");
+		String text = null;
+		if(rs.next())
+			text = rs.getString("actual_text");
+		System.out.println(text);
 		//Ensure 1 correct and 3 wrong
 		
 		HashMap<Integer,String> map=new HashMap<Integer,String>();
@@ -172,41 +188,47 @@ public class Exercise {
 		while(rs.next()) {
 			arr_incorrect.add(rs.getString("answer_text"));
 		}
-		rs = qr.selectQueries("select a.answer_text as answer_text from answers a,answer_set ast where ast.question_id = " + question_id+" and a.answer_set_id = ast.id and a.is_correct=0");
+		rs = qr.selectQueries("select a.answer_text as answer_text from answers a,answer_set ast where ast.question_id = " + question_id+" and a.answer_set_id = ast.id and a.is_correct=1");
 		while(rs.next()) {
 			arr_correct.add(rs.getString("answer_text"));
 		}
+	//	System.out.println(arr_correct+" coorrrr");
+	//	System.out.println(arr_incorrect+" bidsfsd");
 		while(arr_mix.size()< 3) {
+			
 			int j=arr_incorrect.size();
 			Random rand = new Random();
-			int  n = rand.nextInt(j) + 1;
+			int  n = rand.nextInt(j);
 			if(!arr_mix.contains(arr_incorrect.get(n)))
 				arr_mix.add(arr_incorrect.get(n));
+	//		System.out.println(arr_mix);
 		}
 		int j=arr_correct.size();
 		Random rand = new Random();
-		int  n = rand.nextInt(j) + 1;
+		int  n = rand.nextInt(j);
 		arr_mix.add(arr_correct.get(n));
+	//	System.out.println(arr_mix);
 		Collections.shuffle(arr_mix);
-		int in=0;
-		while(in<arr_mix.size()) {
-			map.put(in, arr_mix.get(in));
+		int in=1;
+		while(in<=arr_mix.size()) {
+			map.put(in, arr_mix.get(in-1));
 			in++;
 		}
 		for(Integer k:map.keySet()) {
 			System.out.println(k+" "+map.get(k));
 		}
-		rs = qr.selectQueries("select max(id) as val from exercise_question_set");
+		System.out.println(map);
+		rs = qr.selectQueries("select max(id) as val from attempts");
 		Integer val = -1;
 		if(rs.next())
-			val = rs.getInt("val") + 1;
+			val = rs.getInt("val");
 		System.out.println("Please provide your answer:");
-		rs = qr.selectQueries("select id from exercise_questions where question_id = "+question_id +" and exercise_id = "+id);
-		Integer eq = -1;
+		rs = qr.selectQueries("select id from exercise_questions where question_id = "+question_id +" and exercise_id = "+ex_id);
+		int eq = -1;
 		if(rs.next())
 			eq = rs.getInt("id");
 		Integer selected_ans = sc.nextInt();
-		qr.updateQueries("insert into exercise_question_set values ("+val + "," + selected_ans + "," +eq+ ","+ null +","+map.toString());
+		qr.updateQueries("insert into exercise_question_set values ("+val + ",'" + map.get(selected_ans) + "'," +eq+ ", NULL ,'"+map.toString()+"')");
 		if(arr_correct.contains(map.get(selected_ans))){
 			return true;
 		}
