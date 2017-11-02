@@ -44,8 +44,8 @@ public class Exercise {
 		this.student_attempts = new ArrayList<Attempt>();
 	}
 	
-	public void showHomeworkMenu(ResultSet rs, Integer student_id) {
-		//this.id = rs.getInt("exercise_id");
+	public void showHomeworkMenu(ResultSet rs, Integer student_id) throws SQLException {
+		this.id = rs.getInt("exercise_id");
 		System.out.println("student_id = " + student_id);
 		try {
 			System.out.println("Homework Menu for " + rs.getString("course_id"));
@@ -68,12 +68,13 @@ public class Exercise {
 	
 	public void currentHWs(ResultSet inputRS,Integer student_id) throws SQLException {
 		ResultSet rs = null;
-		ResultSet qw= qr.selectQueries("select count(*) as count1 from student_attempts_exercises where exercise_id="+id+" and student_id="+student_id);
+		ResultSet qw= qr.selectQueries("select count(*) as count1 from student_attempts_exercises where exercise_id="+this.id+" and student_id="+student_id);
 		Integer tries = -1;
 		if(qw.next()) {
 			tries=qw.getInt("count1");
 		}
-		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP and e.start_time <= CURRENT_TIMESTAMP and e.num_of_retries>="+tries);
+		System.out.println(tries);
+		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP and e.start_time <= CURRENT_TIMESTAMP and e.num_of_retries<="+tries);
 		try {
 			int flag = 0;
 			String name;
@@ -100,11 +101,11 @@ public class Exercise {
 		}
 	}
 	
-	public void attemptHomework(int id,Integer student_id) throws SQLException{
+	public void attemptHomework( int ex_id,Integer student_id) throws SQLException{
 
 		Timestamp ts_start = new Timestamp(System.currentTimeMillis());
 		ResultSet rs = null;
-		rs = qr.selectQueries("select * from exercise_questions where exercise_id = "+id);
+		rs = qr.selectQueries("select * from exercise_questions where exercise_id = "+ex_id);
 		List<QuestionExercise> question = new ArrayList<QuestionExercise>();
 		Integer score = 0;
 		while(rs.next()){
@@ -146,13 +147,13 @@ public class Exercise {
 		for(QuestionExercise qe: question){
 			System.out.println(qe.parameter_id);
 			if(qe.parameter_id==0){
-				if(viewSimpleQuestion(id,qe.question_id,student_id))
+				if(viewSimpleQuestion(ex_id,qe.question_id,student_id))
 					score+=3;
 				else
 					score-=1;
 			}
 			else{
-				viewParamQuestion(id,qe.question_id,qe.parameter_id,student_id);
+				viewParamQuestion(ex_id,qe.question_id,qe.parameter_id,student_id);
 			}
 		}
 		
