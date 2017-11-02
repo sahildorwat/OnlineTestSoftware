@@ -93,12 +93,92 @@ public class Exercise {
 			else{
 				System.out.println("Please enter homework id which you wish to attempt");
 				Integer option = sc.nextInt();
-				attemptHomework(option,student_id);
+				rs = qr.selectQueries("select homework_type from exercises where id = "+option);
+				String ex_type = ""; 
+				if(rs.next()){
+					ex_type = rs.getString("homework_type");
+				}
+				if(ex_type.equals("Standard")){
+					attemptHomework(option,student_id);
+				}
+				else{
+					attemptAdaptiveHomework(option,student_id);
+				}
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public void attemptAdaptiveHomework( int ex_id,Integer student_id) throws SQLException{
+
+		Timestamp ts_start = new Timestamp(System.currentTimeMillis());
+		ResultSet rs = null;
+		rs = qr.selectQueries("select e.question_id as question_id, e.parameter_d as parameter_id, q.difficulty_level as difficulty_level from exercise_questions e, questions q where q.id = e.question_id and e.exercise_id = "+ex_id);
+		List<QuestionExercise> question = new ArrayList<QuestionExercise>();
+		Integer score = 0;
+		while(rs.next()){
+			QuestionExercise q = new QuestionExercise();
+			Integer question_id  = rs.getInt("question_id");
+			Integer param_id = rs.getInt("parameter_id");
+			Integer difficulty_level = rs.getInt("difficulty_level");
+			q.question_id =  question_id;
+			q.parameter_id = param_id;
+			q.difficulty_level = difficulty_level;
+			question.add(q);
+		}
+		rs = qr.selectQueries("select max(id) as val from attempts");
+		Integer val = -1;
+		if(rs.next())
+			val = rs.getInt("val") + 1;
+		rs = qr.selectQueries("select max(attempt_id) as val from student_attempts_exercises where student_id="+student_id+" and exercise_id="+id);
+		Integer attempt_id = -1;
+		if(rs.next())
+			attempt_id = rs.getInt("val");
+		rs = qr.selectQueries("select attempt_no from attempts where id="+attempt_id);
+		Integer attempt_no=-1;
+		if(rs.next()){
+			attempt_no=rs.getInt("attempt_no");
+		}
+		if(attempt_no==null)
+			attempt_no = 0;
+		attempt_no++;
+		Timestamp ts_end = new Timestamp(System.currentTimeMillis());
+		
+		String query = "INSERT INTO attempts VALUES (?,?,?,?,?)";
+		PreparedStatement ps = qr.conn.prepareStatement(query);
+		ps.setInt(1,val);
+		ps.setInt(2,attempt_no);
+		ps.setInt(3,score);
+		ps.setTimestamp(4, ts_start);
+		ps.setTimestamp(5, ts_end);
+		ps.execute();
+		ps.close();	
+		for(QuestionExercise qe: question){
+			System.out.println(qe.parameter_id);
+			if(qe.parameter_id==0){
+				if(viewSimpleQuestion(ex_id,qe.question_id,student_id))
+					score+=3;
+				else
+					score-=1;
+			}
+			else{
+				viewParamQuestion(ex_id,qe.question_id,qe.parameter_id,student_id);
+			}
+		}
+		
+		rs = qr.selectQueries("select max(id) as val from attempts");
+		ts_end = new Timestamp(System.currentTimeMillis());
+//		qr.updateQueries("insert into attempts values("+val+","+ attempt_no +"," + score +","+ts_start +","+ts_end+")");
+		System.out.println(score);
+		query = "UPDATE attempts set end_time = ?, score = ? where id = ?";
+		ps = qr.conn.prepareStatement(query);
+		ps.setTimestamp(1, ts_end);
+		ps.setInt(2,score);
+		ps.setInt(3,val);
+		ps.execute();
+		ps.close();	
+
 	}
 	
 	public void attemptHomework( int ex_id,Integer student_id) throws SQLException{
