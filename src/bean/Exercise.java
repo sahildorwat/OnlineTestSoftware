@@ -1,8 +1,11 @@
 package bean;
 
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -63,20 +66,27 @@ public class Exercise {
 		}
 	}
 	
-	public void currentHWs(ResultSet inputRS,Integer student_id) {
+	public void currentHWs(ResultSet inputRS,Integer student_id) throws SQLException {
 		ResultSet rs = null;
-		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP and e.start_time <= CURRENT_TIMESTAMP");
+		ResultSet qw= qr.selectQueries("select count(*) as count1 from student_attempts_exercises where exercise_id="+id+" and student_id="+student_id);
+		Integer tries = -1;
+		if(qw.next()) {
+			tries=qw.getInt("count1");
+		}
+		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP and e.start_time <= CURRENT_TIMESTAMP and e.num_of_retries>="+tries);
 		try {
 			int flag = 0;
-			while(rs.next()) {				
-				if (rs.getString("name") != null) {
+			String name;
+			while(rs.next()) {			
+				name=rs.getString("name");
+				if (name != null) {
 					System.out.println("List of available homeworks: ");
-					System.out.println(rs.getString("name"));
+					System.out.println(name);
 					System.out.println("1. Attempt Homework");	
 					flag=1;
 				}
 			}
-			if (flag == 0 || rs.getString("name") == null) {
+			if (flag == 0) {
 				System.out.println("No active homeworks for this course!");
 			}
 			else{
@@ -91,18 +101,12 @@ public class Exercise {
 	}
 	
 	public void attemptHomework(int id,Integer student_id) throws SQLException{
-		ResultSet qw= qr.selectQueries("select count(*) as count1 from student_attempts_exercises where exercise_id="+id+"and student_id="+student_id);
-		if(qw.next()) {
-			Integer tries=qw.getInt("count1");
-		}
-		qw=qr.selectQueries("select NUM_OF_RETRIES from exercises where id="+id);
-		if(qw.next()) {
-			Integer tries_allowed=qw.getInt("NUM_OF_RETRIES");
-		}
-		
+
+		Timestamp ts_start = new Timestamp(System.currentTimeMillis());
 		ResultSet rs = null;
 		rs = qr.selectQueries("select * from exercise_questions where exercise_id = "+id);
 		List<QuestionExercise> question = new ArrayList<QuestionExercise>();
+		Integer score = 0;
 		while(rs.next()){
 			QuestionExercise q = new QuestionExercise();
 			Integer question_id  = rs.getInt("question_id");
@@ -110,18 +114,50 @@ public class Exercise {
 			q.question_id =  question_id;
 			q.parameter_id = param_id;
 		}
+		//System.out.println(question.length());
 		for(QuestionExercise qe: question){
 
 			if(qe.parameter_id==null){
-				viewSimpleQuestion(qe.question_id,student_id);
+				if(viewSimpleQuestion(id,qe.question_id,student_id))
+					score+=3;
+				else
+					score-=1;
 			}
 			else{
-				viewParamQuestion(qe.question_id,qe.parameter_id,student_id);
+				viewParamQuestion(id,qe.question_id,qe.parameter_id,student_id);
 			}
 		}
+		rs = qr.selectQueries("select max(id) as val from attempts");
+		Integer val = -1;
+		if(rs.next())
+			val = rs.getInt("val") + 1;
+		rs = qr.selectQueries("select max(attempt_id) as val from student_attempts_exercises where student_id="+student_id+" and exercise_id="+id);
+		Integer attempt_id = -1;
+		if(rs.next())
+			attempt_id = rs.getInt("val");
+		rs = qr.selectQueries("select attempt_no from attempts where id="+attempt_id);
+		Integer attempt_no=-1;
+		if(rs.next()){
+			attempt_no=rs.getInt("attempt_no");
+		}
+		if(attempt_no==null)
+			attempt_no = 0;
+		attempt_no++;
+		Timestamp ts_end = new Timestamp(System.currentTimeMillis());
+//		qr.updateQueries("insert into attempts values("+val+","+ attempt_no +"," + score +","+ts_start +","+ts_end+")");
+		
+		String query = "INSERT INTO attempts VALUES (?,?,?,?,?)";
+		PreparedStatement ps = qr.conn.prepareStatement(query);
+		ps.setInt(1,val);
+		ps.setInt(2,attempt_no);
+		ps.setInt(3,score);
+		ps.setTimestamp(4, ts_start);
+		ps.setTimestamp(5, ts_end);
+		ps.execute();
+		ps.close();	
 	}
 	
-	public void viewSimpleQuestion(Integer question_id,Integer student_id) throws SQLException{
+	public boolean viewSimpleQuestion(Integer ex_id, Integer question_id,Integer student_id) throws SQLException{
 		ResultSet rs = null;
 		rs = qr.selectQueries("select actual_text from questions where id = " + question_id);
 		String text = rs.getString("actual_text");
@@ -132,11 +168,11 @@ public class Exercise {
 		ArrayList<String> arr_correct=new ArrayList<String>();
 		ArrayList<String> arr_mix=new ArrayList<String>();
 		
-		rs = qr.selectQueries("select a.answer_text as answer_text from answers a,answer_set ast where ast.question_id = " + question_id+"and a.answer_set_id = ast.id and a.is_correct=0");
+		rs = qr.selectQueries("select a.answer_text as answer_text from answers a,answer_set ast where ast.question_id = " + question_id+" and a.answer_set_id = ast.id and a.is_correct=0");
 		while(rs.next()) {
 			arr_incorrect.add(rs.getString("answer_text"));
 		}
-		rs = qr.selectQueries("select a.answer_text as answer_text from answers a,answer_set ast where ast.question_id = " + question_id+"and a.answer_set_id = ast.id and a.is_correct=0");
+		rs = qr.selectQueries("select a.answer_text as answer_text from answers a,answer_set ast where ast.question_id = " + question_id+" and a.answer_set_id = ast.id and a.is_correct=0");
 		while(rs.next()) {
 			arr_correct.add(rs.getString("answer_text"));
 		}
@@ -160,13 +196,24 @@ public class Exercise {
 		for(Integer k:map.keySet()) {
 			System.out.println(k+" "+map.get(k));
 		}
+		rs = qr.selectQueries("select max(id) as val from exercise_question_set");
+		Integer val = -1;
+		if(rs.next())
+			val = rs.getInt("val") + 1;
 		System.out.println("Please provide your answer:");
-		sc.nextInt();
-		
-		
+		rs = qr.selectQueries("select id from exercise_questions where question_id = "+question_id +" and exercise_id = "+id);
+		Integer eq = -1;
+		if(rs.next())
+			eq = rs.getInt("id");
+		Integer selected_ans = sc.nextInt();
+		qr.updateQueries("insert into exercise_question_set values ("+val + "," + selected_ans + "," +eq+ ","+ null +","+map.toString());
+		if(arr_correct.contains(map.get(selected_ans))){
+			return true;
+		}
+		return false;
 	}
 	
-	public void viewParamQuestion(Integer question_id,Integer param_id,Integer student_id){
+	public void viewParamQuestion(Integer ex_id, Integer question_id,Integer param_id,Integer student_id){
 		
 	}
 	
