@@ -114,7 +114,19 @@ public class Exercise {
 
 		Timestamp ts_start = new Timestamp(System.currentTimeMillis());
 		ResultSet rs = null;
-		rs = qr.selectQueries("select e.question_id as question_id, e.parameter_d as parameter_id, q.difficulty_level as difficulty_level from exercise_questions e, questions q where q.id = e.question_id and e.exercise_id = "+ex_id);
+		rs = qr.selectQueries("select total_questions from exercises where id = "+ex_id);
+		Integer total_questions = -1;
+		if(rs.next()){
+			total_questions = rs.getInt("total_questions");
+		}
+		Integer max_diff = 3;
+		Integer min_diff = 1;
+		rs = qr.selectQueries("select min(difficulty_level) mn, max(difficulty_level) mx from questions q,exercise_questions e where q.id = e.question_id and e.exercise_id = "+ex_id);
+		if(rs.next()){
+			max_diff = rs.getInt("mx");
+			min_diff = rs.getInt("mn");
+		}
+		rs = qr.selectQueries("select e.question_id as question_id, e.parameter_id as parameter_id, q.difficulty_level as difficulty_level from exercise_questions e, questions q where q.id = e.question_id and e.exercise_id = "+ex_id);
 		List<QuestionExercise> question = new ArrayList<QuestionExercise>();
 		Integer score = 0;
 		while(rs.next()){
@@ -154,17 +166,81 @@ public class Exercise {
 		ps.setTimestamp(5, ts_end);
 		ps.execute();
 		ps.close();	
-		for(QuestionExercise qe: question){
-			System.out.println(qe.parameter_id);
-			if(qe.parameter_id==0){
-				if(viewSimpleQuestion(ex_id,qe.question_id,student_id))
-					score+=3;
-				else
-					score-=1;
+		
+		HashMap<Integer,ArrayList<QuestionExercise>> map = new HashMap<Integer,ArrayList<QuestionExercise>>(); 
+		
+		for(QuestionExercise q:question){
+			if(map.get(q.difficulty_level)==null){
+				ArrayList<QuestionExercise> lis = new ArrayList<QuestionExercise>();
+				lis.add(q);
+				map.put(q.difficulty_level, lis);
 			}
 			else{
-				viewParamQuestion(ex_id,qe.question_id,qe.parameter_id,student_id);
+				int f = 0;
+				ArrayList<QuestionExercise> lis = map.get(q.difficulty_level);
+				for(QuestionExercise qw: lis){
+					if(qw.question_id == q.question_id){
+						f = 1;
+						continue;
+					}
+				}
+				if(f==1)
+					continue;
+				lis.add(q);
+				map.put(q.difficulty_level, lis);
 			}
+		}
+		
+		Integer current_mn = min_diff;
+		//System.out.println(map);
+		for(int i=0;i<total_questions;i++){
+			ArrayList<QuestionExercise> lst = map.get(current_mn);
+			QuestionExercise qe = lst.get(lst.size()-1);
+			lst.remove(lst.size()-1);
+			if(qe.parameter_id==0){
+				if(viewSimpleQuestion(ex_id,qe.question_id,student_id)){
+					score+=3;
+					if(current_mn+1<=max_diff)
+						if(map.get(current_mn+2)!=null&&map.get(current_mn+1)==null&&current_mn+2<=max_diff)
+							current_mn+=2;
+							else if(map.get(current_mn+1)!=null&&current_mn+1<=max_diff){
+								current_mn++;
+							}
+				}
+				else{
+					score-=1;
+					if(current_mn-1>=min_diff){
+						if(map.get(current_mn-2)!=null&&map.get(current_mn-1)==null&&current_mn-2>=min_diff)
+						current_mn-=2;
+						else if(map.get(current_mn-1)!=null&&current_mn-1>=min_diff){
+							current_mn--;
+						}
+					}
+				}
+			}
+			else{
+				if(viewParamQuestion(ex_id,qe.question_id,qe.parameter_id,student_id)){
+					score+=3;
+					if(current_mn+1<=max_diff)
+						if(map.get(current_mn+1)==null&&current_mn+2<=max_diff)
+							current_mn+=2;
+							else{
+								current_mn++;
+							}
+				}
+				else{
+					score-=1;
+					if(current_mn-1>=min_diff){
+						if(map.get(current_mn-1)==null&&current_mn-2>=min_diff)
+						current_mn-=2;
+						else{
+							current_mn--;
+						}
+					}
+				}
+				
+			}
+			
 		}
 		
 		rs = qr.selectQueries("select max(id) as val from attempts");
