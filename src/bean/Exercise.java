@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 import queries.QueriesRunner;
@@ -89,6 +91,15 @@ public class Exercise {
 	}
 	
 	public void attemptHomework(int id,Integer student_id) throws SQLException{
+		ResultSet qw= qr.selectQueries("select count(*) as count1 from student_attempts_exercises where exercise_id="+id+"and student_id="+student_id);
+		if(qw.next()) {
+			Integer tries=qw.getInt("count1");
+		}
+		qw=qr.selectQueries("select NUM_OF_RETRIES from exercises where id="+id);
+		if(qw.next()) {
+			Integer tries_allowed=qw.getInt("NUM_OF_RETRIES");
+		}
+		
 		ResultSet rs = null;
 		rs = qr.selectQueries("select * from exercise_questions where exercise_id = "+id);
 		List<QuestionExercise> question = new ArrayList<QuestionExercise>();
@@ -115,9 +126,42 @@ public class Exercise {
 		rs = qr.selectQueries("select actual_text from questions where id = " + question_id);
 		String text = rs.getString("actual_text");
 		//Ensure 1 correct and 3 wrong
-		rs = qr.selectQueries("select a.answer_text from answers a,answer_set as where as.question_id = " + question_id+"and a.answer_set_id = as.id");
 		
+		HashMap<Integer,String> map=new HashMap<Integer,String>();
+		ArrayList<String> arr_incorrect=new ArrayList<String>();
+		ArrayList<String> arr_correct=new ArrayList<String>();
+		ArrayList<String> arr_mix=new ArrayList<String>();
 		
+		rs = qr.selectQueries("select a.answer_text as answer_text from answers a,answer_set ast where ast.question_id = " + question_id+"and a.answer_set_id = ast.id and a.is_correct=0");
+		while(rs.next()) {
+			arr_incorrect.add(rs.getString("answer_text"));
+		}
+		rs = qr.selectQueries("select a.answer_text as answer_text from answers a,answer_set ast where ast.question_id = " + question_id+"and a.answer_set_id = ast.id and a.is_correct=0");
+		while(rs.next()) {
+			arr_correct.add(rs.getString("answer_text"));
+		}
+		while(arr_mix.size()< 3) {
+			int j=arr_incorrect.size();
+			Random rand = new Random();
+			int  n = rand.nextInt(j) + 1;
+			if(!arr_mix.contains(arr_incorrect.get(n)))
+				arr_mix.add(arr_incorrect.get(n));
+		}
+		int j=arr_correct.size();
+		Random rand = new Random();
+		int  n = rand.nextInt(j) + 1;
+		arr_mix.add(arr_correct.get(n));
+		Collections.shuffle(arr_mix);
+		int in=0;
+		while(in<arr_mix.size()) {
+			map.put(in, arr_mix.get(in));
+			in++;
+		}
+		for(Integer k:map.keySet()) {
+			System.out.println(k+" "+map.get(k));
+		}
+		System.out.println("Please provide your answer:");
+		sc.nextInt();
 		
 		
 	}
