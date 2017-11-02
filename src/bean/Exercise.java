@@ -52,7 +52,7 @@ public class Exercise {
 			Integer option = sc.nextInt();
 			switch(option) {
 				case 0: return;
-				case 1: currentHWs(rs); break;
+				case 1: currentHWs(rs, student_id); break;
 				case 2: pastHWs(rs, student_id); break;
 			}
 		} catch (SQLException e) {
@@ -61,24 +61,69 @@ public class Exercise {
 		}
 	}
 	
-	public void currentHWs(ResultSet inputRS) {
+	public void currentHWs(ResultSet inputRS,Integer student_id) {
 		ResultSet rs = null;
-		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP and e.start_time >= CURRENT_TIMESTAMP");
+		rs = qr.selectQueries("select e.name from exercises e where e.end_time > CURRENT_TIMESTAMP and e.start_time <= CURRENT_TIMESTAMP");
 		try {
+			int flag = 0;
 			while(rs.next()) {				
 				if (rs.getString("name") != null) {
 					System.out.println("List of available homeworks: ");
 					System.out.println(rs.getString("name"));
-					System.out.println("1. Attempt Homework");				
+					System.out.println("1. Attempt Homework");	
+					flag=1;
 				}
 			}
-			if (!rs.next() || rs.getString("name") == null) {
+			if (flag == 0 || rs.getString("name") == null) {
 				System.out.println("No active homeworks for this course!");
+			}
+			else{
+				System.out.println("Please enter homework id which you wish to attempt");
+				Integer option = sc.nextInt();
+				attemptHomework(option,student_id);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void attemptHomework(int id,Integer student_id) throws SQLException{
+		ResultSet rs = null;
+		rs = qr.selectQueries("select * from exercise_questions where exercise_id = "+id);
+		List<QuestionExercise> question = new ArrayList<QuestionExercise>();
+		while(rs.next()){
+			QuestionExercise q = new QuestionExercise();
+			Integer question_id  = rs.getInt("question_id");
+			Integer param_id = rs.getInt("parameter_id");
+			q.question_id =  question_id;
+			q.parameter_id = param_id;
+		}
+		for(QuestionExercise qe: question){
+
+			if(qe.parameter_id==null){
+				viewSimpleQuestion(qe.question_id,student_id);
+			}
+			else{
+				viewParamQuestion(qe.question_id,qe.parameter_id,student_id);
+			}
+		}
+	}
+	
+	public void viewSimpleQuestion(Integer question_id,Integer student_id) throws SQLException{
+		ResultSet rs = null;
+		rs = qr.selectQueries("select actual_text from questions where id = " + question_id);
+		String text = rs.getString("actual_text");
+		//Ensure 1 correct and 3 wrong
+		rs = qr.selectQueries("select a.answer_text from answers a,answer_set as where as.question_id = " + question_id+"and a.answer_set_id = as.id");
+		
+		
+		
+		
+	}
+	
+	public void viewParamQuestion(Integer question_id,Integer param_id,Integer student_id){
+		
 	}
 	
 	public void pastHWs(ResultSet inputRS, Integer student_id) throws SQLException {	
