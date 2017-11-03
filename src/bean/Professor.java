@@ -395,9 +395,10 @@ public class Professor {
 	}
 	public void setUpTa() throws ParseException, SQLException{
 		System.out.println("Please tell the student_id of student(TA):");
+		Integer ta_id = sc.nextInt();
 		System.out.println("Please provide course_id:");
-		String course_id=sc.next();
-		qr.updateQueries("INSERT INTO COURSES_TO_TA VALUES("+this.id+",'"+course_id+"',"+id+")");
+		String course_id = sc.next();
+		qr.updateQueries("INSERT INTO COURSES_TO_TA VALUES("+this.id+",'"+course_id+"'," + ta_id + ")");
 		showOptions();
 	}
 	public void viewReport() throws SQLException, ParseException{
