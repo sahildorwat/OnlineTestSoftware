@@ -550,11 +550,11 @@ public class Exercise {
 				System.out.println("Attempt #"+(index+1));
 				ArrayList<Integer> question_ids = new ArrayList<Integer>();
 				ArrayList<Integer> selected_ans_ids = new ArrayList<Integer>();
-				rs = qr.selectQueries("select * from exercise_question_set eqs where eqs.attempt_id = " + (int)attempt_ids.get(index));
+				rs = qr.selectQueries("select eqs.selected_ans as selected_an, eq.question_id as eqi  from exercise_question_set eqs, exercise_questions eq where eq.id = eqs.eq_id and eqs.attempt_id = " + (int)attempt_ids.get(index));
 				while(rs.next())
 				{
-					question_ids.add(rs.getInt("eq_id"));
-					selected_ans_ids.add(rs.getInt("selected_ans"));
+					question_ids.add(rs.getInt("eqi"));
+					selected_ans_ids.add(rs.getInt("selected_an"));
 				}
 				
 				System.out.println("Questions asked in the attempt : " + question_ids.toString());
@@ -566,7 +566,7 @@ public class Exercise {
 					ArrayList<String> per_question_solution = new ArrayList<String>();
 					// Need to add the relationship between parameters too for question 3
 						//Integer default_param = 1;
-					rs = qr.selectQueries("select ans.answer_text from answers ans, answer_set ans_set, exercise_question_set eqs where ans_set.question_id= " + (int)question_ids.get(q_index) + " and ans.answer_set_id = ans_set.id and ans.is_correct = 1 and ans_set.parameter_id = eqs.parameter_id  and eqs.attempt_id = " + (int)attempt_ids.get(index) );
+					rs = qr.selectQueries("select ans.answer_text from answers ans, answer_set ans_set, exercise_question_set eqs, exercise_questions eq where ans_set.question_id = "+ question_ids.get(q_index) +" and ans.answer_set_id = ans_set.id and ans.is_correct = 1 and eqs.attempt_id = "+ attempt_ids.get(index) +" and (ans_set.parameter_id = eqs.parameter_id OR (ans_set.parameter_id is NULL and eqs.parameter_id is NULL)) and eq.question_id = "+ question_ids.get(q_index) +" and eq.id = eqs.eq_id" );
 					while(rs.next())
 					{
 						per_question_solution.add(rs.getString("answer_text"));
