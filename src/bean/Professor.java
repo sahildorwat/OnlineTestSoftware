@@ -398,6 +398,16 @@ public class Professor {
 		Integer ta_id = sc.nextInt();
 		System.out.println("Please provide course_id:");
 		String course_id = sc.next();
+		ResultSet test = null;
+		int flag = 0;
+		test = qr.selectQueries("select * from enrollment where student_id = " + ta_id + " and course_id = '" + course_id + "'");
+		while(test.next()) {
+			flag = 1;
+		}
+		if(flag == 1) {
+			System.out.println("This student cannot be a TA for a course he is enrolled in!\n");
+			showOptions();
+		}
 		qr.updateQueries("INSERT INTO COURSES_TO_TA VALUES("+this.id+",'"+course_id+"'," + ta_id + ")");
 		showOptions();
 	}
