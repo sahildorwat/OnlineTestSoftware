@@ -7,3 +7,12 @@
 
 ## How to run the application
 * To run the application, simply run the project in Eclipse or any other IDE as a Java application. You will see a menu to login. After logging in, various menu options will be displayed depending on your role.
+
+## Team Members (Alphabetical Order)
+| Name               | Unity ID           |
+| ------------------ |:-------------:|
+| Kunal Kulkarni     | krkulkar |
+| Kshitij Patil      | kspatil2 |
+| Rachit Shrivastava | rshriva  |
+| Rishabh Sinha      | rsinha2  |
+| Sahil Dorwat       | ssdorwat   |
