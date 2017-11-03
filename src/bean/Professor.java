@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import application.runner.Application;
+
 import java.util.Date;
 
 import queries.QueriesRunner;
@@ -29,16 +32,18 @@ public class Professor {
 	
 	static Scanner sc=new Scanner(System.in);
 	static QueriesRunner qr = QueriesRunner.getInstance();
-	public  void loginAsProfessor(ResultSet rs) throws ParseException{
+//	public  void loginAsProfessor(ResultSet rs) throws ParseException{
+	public  void loginAsProfessor(ResultSet rs) {	
 		try {
 			this.id=rs.getInt("id");
 			this.name=rs.getString("name");
 			this.user_id=rs.getString("user_id");
 			this.password=rs.getString("password");
 			showOptions();
-		} catch (SQLException e) {
+		} catch (SQLException | ParseException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Application.login();
+//			e.printStackTrace();
 		}
 	}
 	public void showOptions() throws ParseException, SQLException{
@@ -80,7 +85,7 @@ public class Professor {
 			}
 		}
 	}
-	public void addRemoveQuestionsFromExercises() throws SQLException {
+	public void addRemoveQuestionsFromExercises() throws SQLException, ParseException {
 		while(true){
 			System.out.println("1.Add Questions from Exercise");
 			System.out.println("2.Remove Questions from Exercise");
@@ -94,9 +99,10 @@ public class Professor {
 			}
 			if(flag==1) break;
 		}
+		showOptions();
 	}
 	
-	public void addQuestionsToExercises() throws SQLException {
+	public void addQuestionsToExercises() throws SQLException, ParseException {
 		System.out.println("Please Enter Exercise Id");
 		Integer id = sc.nextInt();
 		ResultSet ws= qr.selectQueries("select * from exercises where id="+id);
@@ -109,7 +115,7 @@ public class Professor {
 			
 		
 	}
-	public void addQuestionsStandard(Integer ex_id) throws SQLException{
+	public void addQuestionsStandard(Integer ex_id) throws SQLException, ParseException{
 //		ResultSet ws= qr.selectQueries("select * from topics");
 //		while(ws.next()){
 //			Integer topic_id = ws.getInt("id");
@@ -152,9 +158,10 @@ public class Professor {
 			Integer op = sc.nextInt();
 			if(op.equals(0))
 				break;
-		}		
+		}	
+		showOptions();
 	}
-	public void addAdaptiveQuestions(Integer ex_id) throws SQLException {
+	public void addAdaptiveQuestions(Integer ex_id) throws SQLException, ParseException {
 //		ResultSet ws= qr.selectQueries("select * from topics");
 //		while(ws.next()){
 //			Integer topic_id = ws.getInt("id");
@@ -189,9 +196,9 @@ public class Professor {
 			qr.updateQueries("insert into exercise_questions values("+ eq_id +","+val+","+ex_id+")");
 			eq_id++;
 		}
-
+		showOptions();
 	}
-	public void removeQuestionsFromExercises() throws SQLException {
+	public void removeQuestionsFromExercises() throws SQLException, ParseException {
 		System.out.println("Please Enter Exercise Id");
 		Integer id = sc.nextInt();
 		ResultSet ws= qr.selectQueries("select questions.id as id, questions.actual_text as at from exercise_questions, questions where questions.id = exercise_questions.question_id and exercise_questions.exercise_id="+id);
@@ -203,9 +210,10 @@ public class Professor {
 		System.out.println("enter the question id");
 		Integer q_id = sc.nextInt();
 		qr.updateQueries("delete from exercise_questions where question_id="+q_id);
+		showOptions();
 	}
 	
-	public void searchAddQuestions() throws SQLException {
+	public void searchAddQuestions() throws SQLException, ParseException {
 		while(true){
 			System.out.println("1.Search Questions");
 			System.out.println("2.Add Questions");
@@ -219,8 +227,9 @@ public class Professor {
 			}
 			if(flag==1) break;
 		}
+		showOptions();
 	}
-	public void viewQuestions() throws SQLException{
+	public void viewQuestions() throws SQLException, ParseException{
 		while(true){
 			System.out.println("1.Search By Questions");
 			System.out.println("2.Search By Topics");
@@ -234,8 +243,9 @@ public class Professor {
 			}
 			if(flag==1) break;
 		}
+		showOptions();
 	}
-    public void searchByQuestions() throws SQLException{
+    public void searchByQuestions() throws SQLException, ParseException{
     	System.out.println("Enter Question id");
     	Integer id = sc.nextInt();
     	ResultSet ws= qr.selectQueries("select * from questions where id="+id);
@@ -251,12 +261,10 @@ public class Professor {
 			System.out.println("difficulty_level = "+difficulty_level);
 			System.out.println("hint = "+hint);
 			System.out.println("topic_id = "+topic_id);
-			
-			
-			
 		} 	
+		showOptions();
 	}
-    public void searchByTopics() throws SQLException{
+    public void searchByTopics() throws SQLException, ParseException{
     	System.out.println("Enter topic");
     	String topic = sc.next();
     	topic+=sc.nextLine();
@@ -273,9 +281,10 @@ public class Professor {
 			System.out.println("difficulty_level = "+difficulty_level);
 			System.out.println("hint = "+hint);
 			System.out.println("topic_id = "+topic_id);	
-		} 	
+		} 
+		showOptions();
 	}
-    public void addQuestions() throws SQLException{
+    public void addQuestions() throws SQLException, ParseException{
     	ResultSet ws= qr.selectQueries("select max(id) as id from questions");
 		Integer id = -1;
 		if(ws.next())
@@ -290,7 +299,8 @@ public class Professor {
 		Integer difficulty_level = sc.nextInt();
 		System.out.println("Enter topic_id");
 		Integer topic_id = sc.nextInt();
-		qr.updateQueries("INSERT INTO Questions VALUES("+id+",'"+actual_text+"','"+detailed_explanation+"','"+hint+"',"+difficulty_level+","+topic_id+")");		
+		qr.updateQueries("INSERT INTO Questions VALUES("+id+",'"+actual_text+"','"+detailed_explanation+"','"+hint+"',"+difficulty_level+","+topic_id+")");
+		showOptions();
     } 	
 	
 	public void viewAddExercises() throws SQLException, ParseException{
@@ -307,9 +317,10 @@ public class Professor {
 			}
 			if(flag==1) break;
 		}
+		showOptions();
 	}
 	
-	public void viewExercises() throws SQLException{
+	public void viewExercises() throws SQLException, ParseException{
 		System.out.println("Please provide the exercise_id:");
 		Integer id=sc.nextInt();
 		ResultSet ws= qr.selectQueries("select * from exercises where id="+id+"");
@@ -326,6 +337,7 @@ public class Professor {
 			ex.num_of_retries=ws.getInt("NUM_OF_RETRIES");
 			System.out.println(ex);
 		}
+		showOptions();
 	}
 	public void addExercises() throws SQLException, ParseException{
 
@@ -370,15 +382,17 @@ public class Professor {
 		ps.setInt(9,num_retries);
 		ps.setString(10, home_work_type);
 		ps.execute();
-		ps.close();			
+		ps.close();		
+		showOptions();
 	}
-	public void setUpTa(){
+	public void setUpTa() throws ParseException, SQLException{
 		System.out.println("Please tell the student_id of student(TA):");
 		System.out.println("Please provide course_id:");
 		String course_id=sc.next();
 		qr.updateQueries("INSERT INTO COURSES_TO_TA VALUES("+this.id+",'"+course_id+"',"+id+")");
+		showOptions();
 	}
-	public void viewReport() throws SQLException{
+	public void viewReport() throws SQLException, ParseException{
 		System.out.println("Please provide course_id: ");
 		String course_id=sc.next();
 		int flag=0;
@@ -437,10 +451,10 @@ public class Professor {
 			System.out.println("This Course has no exercises. Please Enter different course");
 			viewReport();
 		}
-		
+		showOptions();
 		
 	}
-	public void enrolDropStudent() throws SQLException{
+	public void enrolDropStudent() throws SQLException, ParseException{
 		int flag=0;
 		while(true){
 			System.out.println("1.Enroll a student");
@@ -456,7 +470,7 @@ public class Professor {
 		}
 	}
 	
-	public void enrollStudent() throws SQLException{
+	public void enrollStudent() throws SQLException, ParseException{
 		System.out.println("Please provide course_id:");
 		String course_id=sc.next();
 		Student stud = new Student();
@@ -479,11 +493,13 @@ public class Professor {
 				qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"',"+stud.id+")");
 			}
 		}
+		showOptions();
 	}
-	public void dropStudent(){
+	public void dropStudent() throws ParseException, SQLException{
 		System.out.println("Please provide the id of student to be deleted:");
 		Integer id=sc.nextInt();
 		qr.updateQueries("DELETE FROM STUDENTS WHERE ID="+id+"");
+		showOptions();
 	}
 	
 	
@@ -498,7 +514,7 @@ public class Professor {
 		}
 	}
 	//select * from courses,exercise_mapping,exercises where courses.id = exercise_mapping.course_id and exercise_mapping.exercise_id = exercises.id
-	public void searchByCourse(){
+	public void searchByCourse() throws ParseException{
 		System.out.println("Enter the course to be searched:(Course_id)");
 		String option =sc.next();
 		ResultSet ws= qr.selectQueries("select c.id as id,c.name as c_name,e.name as e_name from courses c,exercise_mapping em,exercises e where c.id = em.course_id and em.exercise_id = e.id and c.id='"+option+"'");
@@ -512,6 +528,7 @@ public class Professor {
 				String ename=ws.getString("e_name");
 				System.out.println(ename);
 			}
+			showOptions();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -565,7 +582,7 @@ public class Professor {
 				}
 			}
 	}
-	public void addStudents(String course_id){
+	public void addStudents(String course_id) throws ParseException, SQLException{
 		System.out.println("Please enter number of student you want to insert:");
 		Integer flag=sc.nextInt();
 		while(flag>0){
@@ -582,8 +599,9 @@ public class Professor {
 			qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"','"+stud.id+"')");
 			flag--;
 		}
+		showOptions();
 	}
-	public void addTopics(String course_id){
+	public void addTopics(String course_id) throws ParseException, SQLException{
 		System.out.println("Please enter number of topics you want to insert:");
 		Integer flag=sc.nextInt();
 		while(flag>0){
@@ -595,13 +613,14 @@ public class Professor {
 			qr.updateQueries("INSERT INTO COURSES_TO_TOPICS VALUES('"+course_id+"',"+tp.id+")");
 			flag--;
 		}
+		showOptions();
 	}
-	public void viewProfile(){
+	public void viewProfile() throws ParseException{
 		System.out.println(this);
 		getCoursesForProfessor();
 		
 	}
-	public void getCoursesForProfessor(){
+	public void getCoursesForProfessor() throws ParseException{
 		ResultSet ss= qr.selectQueries("select t.course_id as course_id,c.name as name,t.start_date as start_date,t.end_date as end_date from teaches t,courses c where t.course_id=c.id and professor_id="+id);
 		System.out.println();
 		try {
@@ -615,6 +634,7 @@ public class Professor {
 				System.out.println(temp);
 				this.courses.add(temp);
 			}
+			showOptions();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -20,7 +20,7 @@ public class Application {
 		System.out.flush();
 
 	}
-	public static void login() throws SQLException, ParseException{
+	public static void login(){
 		ResultSet rs = null;
 		ResultSet ss = null;
 		ResultSet ws = null;
@@ -34,44 +34,50 @@ public class Application {
 		
 		//rs = qr.selectQueries("select * from students where user_id='"+user_id+"' and password='"+password+"'");
 		ss = qr.selectQueries("select * from professors where user_id='"+user_id+"' and password='"+password+"'");
-		if(ss.next()){
-			//professor login
-			System.out.println("Welcome Prof:"+ ss);
-			prof.loginAsProfessor(ss);
-			System.out.println(prof);
-			GdConnection.close(ss);
-		}
-		else{
-			//check for TA
-			ws=qr.selectQueries("select * from students s, courses_to_ta c where s.id = c.ta_id and user_id='"+user_id
-					+"' and password='"+password+"'");
-			if(ws.next()) {
-				// if TA logs in
-				System.out.println("1.login as Student ");
-				System.out.println("2.login as TA");
-				int option=sc.nextInt();
-				if(option == 1){
-					stud.loginAsStudent(ws);
-					System.out.println(stud);
-				}else if(option == 2){
-					ta.loginAsTeachingAssistant(ws);
-					System.out.println(ta);
-				}
-				GdConnection.close(ws);
-			} else {
-				//Check for Student
-				rs = qr.selectQueries("select * from students where user_id='"+user_id+"' and password='"+password+"'");
-				if(rs.next()) {
-					//Student logs in
-					stud.loginAsStudent(rs);
-					System.out.println(stud);
-				} else {
-					clearScreen();
-					System.out.println("Incorrect Username, Password");
-					mainpage();
-				}
+		try {
+			if(ss.next()){
+				//professor login
+				System.out.println("Welcome Prof:"+ ss);
+				prof.loginAsProfessor(ss);
+				System.out.println(prof);
+				GdConnection.close(ss);
 			}
-			GdConnection.close(rs);
+			else{
+				//check for TA
+				ws=qr.selectQueries("select * from students s, courses_to_ta c where s.id = c.ta_id and user_id='"+user_id
+						+"' and password='"+password+"'");
+				if(ws.next()) {
+					// if TA logs in
+					System.out.println("1.login as Student ");
+					System.out.println("2.login as TA");
+					int option=sc.nextInt();
+					if(option == 1){
+						stud.loginAsStudent(ws);
+						System.out.println(stud);
+					}else if(option == 2){
+						ta.loginAsTeachingAssistant(ws);
+						System.out.println(ta);
+					}
+					GdConnection.close(ws);
+				} else {
+					//Check for Student
+					rs = qr.selectQueries("select * from students where user_id='"+user_id+"' and password='"+password+"'");
+					if(rs.next()) {
+						//Student logs in
+						stud.loginAsStudent(rs);
+						System.out.println(stud);
+					} else {
+						clearScreen();
+						System.out.println("Incorrect Username, Password");
+						mainpage();
+					}
+				}
+				GdConnection.close(rs);
+			}
+		} catch (SQLException | ParseException e) {
+			// TODO Auto-generated catch block
+			login();
+//			e.printStackTrace();
 		}
 		
 	}
