@@ -55,9 +55,10 @@ public class Professor {
 		System.out.println("6.View/Add Exercises");
 		System.out.println("7.Search/Add Questions");
 		System.out.println("8.Add/Remove Questions from Exercises");
+		System.out.println("9.Exit");
 		Integer option =sc.nextInt();
-		
-		while(true){
+		int flag=0;
+		while(flag==0){
 			if(option==1){
 				viewProfile();
 				break;
@@ -82,6 +83,13 @@ public class Professor {
 			}else if(option==8){
 				addRemoveQuestionsFromExercises();
 				break;
+			}
+			else if(option==9){
+				flag=1;
+				break;
+			}
+			else {
+				showOptions();
 			}
 		}
 	}
@@ -617,6 +625,7 @@ public class Professor {
 	}
 	public void viewProfile() throws ParseException{
 		System.out.println(this);
+		
 		getCoursesForProfessor();
 		
 	}
@@ -624,14 +633,18 @@ public class Professor {
 		ResultSet ss= qr.selectQueries("select t.course_id as course_id,c.name as name,t.start_date as start_date,t.end_date as end_date from teaches t,courses c where t.course_id=c.id and professor_id="+id);
 		System.out.println();
 		try {
-			
+			System.out.println("course_id     name     start_date      end_date ");
 			while(ss.next()){
 				Course temp=new Course();
 				temp.id=ss.getString("course_id");
 				temp.name=ss.getString("name");
 				temp.start_date=(Date)ss.getTimestamp("start_date");
 				temp.end_date=(Date)ss.getTimestamp("end_date");
-				System.out.println(temp);
+				System.out.println(temp.id+"  "+temp.name+"  "+temp.start_date+"  "+temp.end_date);
+//				System.out.println(temp.name);
+//				System.out.println(temp.start_date);
+//				System.out.println(temp.end_date);
+				System.out.println();
 				this.courses.add(temp);
 			}
 			showOptions();
