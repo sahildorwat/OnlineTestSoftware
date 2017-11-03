@@ -1,4 +1,4 @@
-# University Course Assessment Application
+# University Course Assessment System
 * This application is a course assessment application for universities, where students can attempt homeworks, and their marks and other details will be recorded.
 * The application includes 2 different types of users: teachers and students. Students can either be enrolled in a course, or can be a TA of a course.
 * Students enrolled in a course can attempt homeworks. Homeworks are of 2 types - standard and adaptive. Adaptive homeworks fetch questions from a bank based on the student's performance so far in the quiz.
