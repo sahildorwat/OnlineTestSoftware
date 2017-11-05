@@ -116,6 +116,11 @@ public class Student {
 					System.out.println(no + ". " + rs.getString("id") + " - " + rs.getString("name"));
 				}
 				
+				if(no == 0) {
+					System.out.println("Not enrolled in any course!");
+					return;
+				}
+				
 				System.out.println("Please Provide Course ID (eg. CSCxxx): ");
 				System.out.println("Press 0 to Go Back to Previous Menu");
 				String option = sc.next();

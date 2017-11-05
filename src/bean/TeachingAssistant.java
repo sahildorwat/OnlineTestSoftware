@@ -162,9 +162,9 @@ public class TeachingAssistant extends Student{
 		qr.updateQueries("DELETE FROM STUDENTS WHERE ID="+id+"");
 	}
 	
-	public void viewReport() {
-		System.out.println("Please provide course_id:");
-		String course_id=sc.next();
+	public void viewReport(String csid) {
+		//System.out.println("Please provide course_id:");
+		String course_id=csid;
 		int flag=0;
 		ResultSet ws= qr.selectQueries("select e.scoring_policy_id as sp_id,e.id as e_id,e.name as name from exercises e,exercise_mapping em where e.id=em.exercise_id and em.course_id='"+course_id+"'");
 		ArrayList<Exercise> listExercise=new ArrayList<Exercise>();
@@ -244,15 +244,15 @@ public class TeachingAssistant extends Student{
 			}
 		}if(flag==0){
 			System.out.println("This Course has no exercises. Please Enter different course");
-			viewReport();
+			//viewReport();
+			return;
 		}
 	
 	}
 	
-	public void viewHomeworks() {
+	public void viewHomeworks(String csid) {
 		// need to remove part of taking input
-		System.out.println("Please provide course_id:");
-		String course_id=sc.next();
+		String course_id=csid;
 		int flag=0;
 		ResultSet ws= qr.selectQueries("select * from exercises e, exercise_mapping em where e.id = em.exercise_id and em.course_id = '" + course_id + "'");
 		try {
@@ -297,8 +297,8 @@ public class TeachingAssistant extends Student{
 				
 				switch(option) {
 					case "0": return;
-					case "1": viewReport(); break;
-					case "2": viewHomeworks(); break;
+					case "1": viewReport(id); break;
+					case "2": viewHomeworks(id); break;
 				}
 			}
 		} catch (SQLException e) {
