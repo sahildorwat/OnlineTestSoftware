@@ -10,7 +10,7 @@
 * We have made the jar executable, but in case it doesn’t work, run the command:
     chmod 777 DBProject1.jar
 * Then run the following command:
-	java -jar DB_P1.jar
+	java -jar DBProject1.jar
 
 ### Github
 * To run the application, simply run the project in Eclipse or any other IDE as a Java application. You will see a menu to login. After logging in, various menu options will be displayed depending on your role.
