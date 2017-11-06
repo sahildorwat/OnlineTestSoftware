@@ -62,6 +62,18 @@ create table Exercise_questions (id integer, question_id integer, exercise_id in
 /* exercise_mapping */
 CREATE TABLE Exercise_Mapping (exercise_id integer, course_id varchar(6), topic_id integer, FOREIGN KEY(exercise_id) REFERENCES Exercises(id), FOREIGN KEY(course_id) REFERENCES Courses(id), FOREIGN KEY(topic_id) REFERENCES Topics(id));
 
+Alter table students add user_id varchar(50);
+Alter table students add password varchar(50);
+Alter table students add name varchar(50);
+
+Alter table professors add user_id varchar(50);
+Alter table professors add password varchar(50);
+
+Alter table exercise_question_set add eq_id integer;
+Alter table exercise_question_set add parameter_id integer;
+Alter table exercise_question_set add options varchar(1024);
+
+
 /* Constraints: */
 Alter table questions add constraints diff_level check (difficulty_level in (1,2,3));
 Alter table students add constraints s_lvl check (lvl in ('U', 'G'));
