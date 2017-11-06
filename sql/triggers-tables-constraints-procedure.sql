@@ -64,7 +64,7 @@ CREATE TABLE Exercise_Mapping (exercise_id integer, course_id varchar(6), topic_
 
 /* Constraints: */
 Alter table questions add constraints diff_level check (difficulty_level in (1,2,3));
-Alter table students add constraints s_lvl check (lvl in (‘U’, ‘G’));
+Alter table students add constraints s_lvl check (lvl in ('U', 'G'));
 Alter table attempts add constraints time_test check (start_time < end_time);
 Alter table teaches add constraints teach_test check (start_date < end_date);
 Alter table exercises add constraints t_test check (start_time <= end_time);
