@@ -57,6 +57,8 @@ create table courses_to_topics( course_id varchar(6), topic_id Integer, PRIMARY 
 -->create table students (id Integer, name varchar(50),user_id varchar(50),password varchar(50),lvl varchar(1), PRIMARY KEY(id));
 */
 
+create table Exercise_questions (id integer, question_id integer, exercise_id integer, parameter_id integer, PRIMARY KEY(id), FOREIGN KEY(exercise_id) references Exercises, FOREIGN KEY(question_id) references questions, FOREIGN KEY(parameter_id) references parameters);
+
 /* exercise_mapping */
 CREATE TABLE Exercise_Mapping (exercise_id integer, course_id varchar(6), topic_id integer, FOREIGN KEY(exercise_id) REFERENCES Exercises(id), FOREIGN KEY(course_id) REFERENCES Courses(id), FOREIGN KEY(topic_id) REFERENCES Topics(id));
 
