@@ -10,7 +10,7 @@ insert into students (id,lvl,name,user_id,password) values (8,'G','James Moyer',
 
 /* Professors */
 insert into professors values(1, 'Kemafor Ogan', 'kogan', 'kogan');
-insert into professors values(2, 'Rada Chirkova’, 'rchirkova', 'rchirkova');
+insert into professors values(2, 'Rada Chirkova', 'rchirkova', 'rchirkova');
 insert into professors values(3, 'Christipher Healey’, ‘chealey', 'chealey');
 
 /* Scoring_policies */
@@ -124,3 +124,25 @@ insert into exercise_question_set(attempt_id, selected_ans,eq_id,options,paramet
 insert into exercise_question_set(attempt_id, selected_ans,eq_id,options,parameter_id) values(12, '1', 4,'{ 0=1, 1=4, 2=5, 3=6 }', NULL);
 insert into exercise_question_set(attempt_id, selected_ans,eq_id,options,parameter_id) values(12, '1', 5,'{ 0=1, 1=4, 2=5, 3=6 }', NULL);
 insert into exercise_question_set(attempt_id, selected_ans,eq_id,options,parameter_id) values(12, '1', 6,'{ 0=1, 1=4, 2=5, 3=6 }', 2);
+
+
+
+select ans.answer_text 
+from answers ans, answer_set ans_set, exercise_question_set eqs, exercise_questions eq
+where ans_set.question_id=1 
+	and ans.answer_set_id = ans_set.id 
+	and ans.is_correct = 1
+	and eqs.attempt_id = 8
+	and (ans_set.parameter_id = eqs.parameter_id OR (ans_set.parameter_id is NULL and eqs.parameter_id is NULL)) and eq.question_id = 1 and eq.exercise_id = 3 and eq.id = eqs.eq_id;
+
+select ans.answer_text from answers ans, answer_set ans_set, exercise_question_set eqs where ans_set.question_id = 3 and (ans_set.parameter_id = eqs.parameter_id or ans_set.parameter_id = NULL) and eqs.attempt_id = 8 and ans.answer_set_id = ans_set.id and ans.is_correct = 1;
+
+select ans.answer_text from answers ans, answer_set ans_set, exercise_question_set eqs where ans_set.question_id = 1 and ans_set.parameter_id is NULL and eqs.attempt_id = 8 and ans.answer_set_id = ans_set.id and ans.is_correct = 1;
+
+select count(*) as cnt from student_attempts_exercises s where s.student_id = 2 and s.exercise_id = 1;
+
+select s.exercise_id, s.student_id, s.attempt_id, a.attempt_no, a.score from student_attempts_exercises s, attempts a where a.id = s.attempt_id order by s.exercise_id, s.student_id, s.attempt_id;
+
+select a.score from student_attempts_exercises s, attempts a where a.id = s.attempt_id and s.student_id = 6 and exercise_id = 2 order by a.attempt_no;
+
+select scoring_policy_id from exercises where id = 2;
