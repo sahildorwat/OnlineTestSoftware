@@ -461,7 +461,14 @@ public class Professor {
 		if(option==2){
 			System.out.println("Please enter id of the student:");
 			Integer id=sc.nextInt();
-			qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"',"+id+")");
+			ResultSet rt = qr.selectQueries("select * from courses_to_ta where course_id = '" + course_id + "' and ta_id = "+ id);
+			if(rt == null) {
+				qr.updateQueries("INSERT INTO ENROLLMENT VALUES('"+course_id+"',"+id+")");
+			}
+			else {
+				System.out.println("TA cannot be enrolled!");
+			}
+			
 		}else{
 			System.out.println("Please enter level, name, user_id, password");
 			stud.lvl=sc.next();
